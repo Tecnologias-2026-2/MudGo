@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil – MudGo Cliente</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Two-column profile layout ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* ── Profile card (left) ── */
+    .profile-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
+      padding: var(--space-6);
+      text-align: center;
+    }
+    .profile-avatar-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: var(--space-4);
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #8B5CF6;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      letter-spacing: 1px;
+    }
+    .profile-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 0.375rem;
+    }
+    .profile-role-badge {
+      display: inline-block;
+      background: var(--primary-50);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: var(--space-4);
+    }
+    .profile-stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-5);
+      padding: var(--space-4) 0;
+      border-top: 1px solid var(--neutral-100);
+      border-bottom: 1px solid var(--neutral-100);
+      margin-bottom: var(--space-4);
+    }
+    .profile-stat-item {
+      text-align: center;
+    }
+    .profile-stat-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--neutral-900);
+    }
+    .profile-stat-lbl {
+      font-size: 0.6875rem;
+      color: var(--neutral-500);
+      margin-top: 2px;
+    }
+    .profile-meta {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 var(--space-5);
+      text-align: left;
+    }
+    .profile-meta li {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-size: 0.8125rem;
+      color: var(--neutral-600);
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--neutral-100);
+    }
+    .profile-meta li:last-child { border-bottom: none; }
+    .profile-meta .meta-icon {
+      flex-shrink: 0;
+      color: var(--neutral-400);
+    }
+    .btn-edit-photo {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ── Right column cards ── */
+    .profile-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    /* ── Form styles ── */
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+    .form-group label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+    .form-group input {
+      height: 42px;
+      padding: 0 0.875rem;
+      border: 1.5px solid var(--neutral-200);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--neutral-900);
+      background: var(--white);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      outline: none;
+    }
+    .form-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.12);
+    }
+    .form-group input::placeholder {
+      color: var(--neutral-400);
+    }
+    .form-full { grid-column: 1 / -1; }
+
+    /* ── Payment method row ── */
+    .payment-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--neutral-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--neutral-200);
+      margin-bottom: var(--space-4);
+    }
+    .card-brand-icon {
+      width: 48px;
+      height: 32px;
+      background: linear-gradient(135deg, #1A1F71 0%, #2563EB 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.625rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .payment-info { flex: 1; }
+    .payment-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+    .payment-expiry {
+      font-size: 0.75rem;
+      color: var(--neutral-500);
+      margin-top: 2px;
+    }
+    .payment-default-badge {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      background: #D1FAE5;
+      color: #059669;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">M</div>
+      <span style="font-size:1.125rem;font-weight:800;color:var(--neutral-900);letter-spacing:-0.5px">MudGo</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Inicio
+      </a>
+      <a href="solicitar-mudanza.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Solicitar
+      </a>
+      <a href="seguimiento.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        Seguimiento
+      </a>
+      <a href="historial-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Historial
+      </a>
+      <a href="perfil-cliente.html" class="active">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+        Perfil
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar" style="background:#8B5CF6">AG</div>
+        <div class="user-details">
+          <div class="user-name">Ana García</div>
+          <div class="user-role">Cliente</div>
+        </div>
+      </div>
+      <a href="login.html" style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--neutral-400);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--neutral-100);transition:color 0.2s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--neutral-400)'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Cerrar sesión
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Perfil</h1>
+        <p class="subtitle">Gestiona tu información personal y preferencias</p>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="profile-grid animate-fade-in">
+
+        <!-- ── LEFT: Profile Card ── -->
+        <div class="profile-card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar">AG</div>
+          </div>
+
+          <div class="profile-name">Ana García</div>
+          <div class="profile-role-badge">Cliente</div>
+
+          <!-- Stats -->
+          <div class="profile-stats">
+            <div class="profile-stat-item">
+              <div class="profile-stat-val">4</div>
+              <div class="profile-stat-lbl">mudanzas</div>
+            </div>
+            <div style="width:1px;background:var(--neutral-200)"></div>
+            <div class="profile-stat-item">
+              <div class="profile-stat-val">4.8★</div>
+              <div class="profile-stat-lbl">calificación</div>
+            </div>
+          </div>
+
+          <!-- Meta info -->
+          <ul class="profile-meta">
+            <li>
+              <svg class="meta-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span>Desde 10 Mar 2024</span>
+            </li>
+            <li>
+              <svg class="meta-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              <span>+57 300 485 9011</span>
+            </li>
+            <li>
+              <svg class="meta-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span>ana@correo.com</span>
+            </li>
+          </ul>
+
+          <button class="btn btn-outline btn-sm btn-edit-photo">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Editar foto
+          </button>
+        </div>
+
+        <!-- ── RIGHT: Forms ── -->
+        <div class="profile-right">
+
+          <!-- Personal Info Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:1rem;font-weight:700;color:var(--neutral-900)">Información personal</h3>
+            </div>
+            <div class="card-body">
+              <form onsubmit="return false;">
+                <div class="form-grid-2">
+                  <div class="form-group form-full">
+                    <label for="full-name">Nombre completo</label>
+                    <input type="text" id="full-name" value="Ana García" placeholder="Tu nombre">
+                  </div>
+                  <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" value="ana@correo.com" placeholder="correo@ejemplo.com">
+                  </div>
+                  <div class="form-group">
+                    <label for="phone">Teléfono</label>
+                    <input type="tel" id="phone" value="+57 300 485 9011" placeholder="+57 000 000 0000">
+                  </div>
+                  <div class="form-group form-full">
+                    <label for="city">Ciudad</label>
+                    <input type="text" id="city" value="Bogotá" placeholder="Tu ciudad">
+                  </div>
+                </div>
+                <div style="margin-top:var(--space-5)">
+                  <button type="submit" class="btn btn-primary btn-sm">Guardar cambios</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Security Card -->
+          <div class="card">
+            <div class="card-header">
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <h3 style="font-size:1rem;font-weight:700;color:var(--neutral-900)">Seguridad</h3>
+              </div>
+            </div>
+            <div class="card-body">
+              <p style="font-size:0.8125rem;font-weight:600;color:var(--neutral-700);margin-bottom:var(--space-4)">Cambiar contraseña</p>
+              <form onsubmit="return false;">
+                <div class="form-grid-2">
+                  <div class="form-group form-full">
+                    <label for="current-pass">Contraseña actual</label>
+                    <input type="password" id="current-pass" placeholder="••••••••">
+                  </div>
+                  <div class="form-group">
+                    <label for="new-pass">Nueva contraseña</label>
+                    <input type="password" id="new-pass" placeholder="••••••••">
+                  </div>
+                  <div class="form-group">
+                    <label for="confirm-pass">Confirmar nueva contraseña</label>
+                    <input type="password" id="confirm-pass" placeholder="••••••••">
+                  </div>
+                </div>
+                <div style="margin-top:var(--space-5)">
+                  <button type="submit" class="btn btn-outline btn-sm">Actualizar contraseña</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Payment Methods Card -->
+          <div class="card">
+            <div class="card-header">
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <h3 style="font-size:1rem;font-weight:700;color:var(--neutral-900)">Métodos de pago</h3>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Saved card -->
+              <div class="payment-item">
+                <div class="card-brand-icon">VISA</div>
+                <div class="payment-info">
+                  <div class="payment-label">Visa •••• 1234</div>
+                  <div class="payment-expiry">Vence 12/27</div>
+                </div>
+                <span class="payment-default-badge">Predeterminada</span>
+              </div>
+
+              <!-- Add method button -->
+              <button class="btn btn-outline btn-sm" style="display:flex;align-items:center;gap:0.5rem;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Agregar método de pago
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /profile-right -->
+      </div><!-- /profile-grid -->
+    </div><!-- /page-body -->
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

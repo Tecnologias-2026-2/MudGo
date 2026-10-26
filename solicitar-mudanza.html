@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitar Mudanza – MudGo</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .cotizaciones-section { margin-top: 1.5rem; }
+    .cotizacion-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--neutral-200);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all var(--transition-base);
+      cursor: pointer;
+    }
+    .cotizacion-card:hover { border-color: var(--primary-200); box-shadow: var(--shadow-blue); }
+    .cotizacion-card.selected { border-color: var(--primary); background: var(--primary-50); }
+    .cotizacion-precio { margin-left: auto; text-align: right; }
+    .cotizacion-precio .precio { font-size: 1.25rem; font-weight: 800; color: var(--neutral-900); }
+    .cotizacion-precio .tipo { font-size: 0.75rem; color: var(--neutral-500); }
+    .carga-tipo-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 0.75rem;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--neutral-200);
+      background: var(--white);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--neutral-600);
+      flex: 1;
+    }
+    .carga-tipo-btn:hover { border-color: var(--primary-200); }
+    .carga-tipo-btn.selected { border-color: var(--primary); background: var(--primary-50); color: var(--primary-dark); }
+    .carga-tipo-btn .icon { font-size: 1.75rem; }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; animation: fadeIn 0.35s ease; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">M</div>
+      <span style="font-size:1.125rem;font-weight:800;color:var(--neutral-900);letter-spacing:-0.5px">MudGo</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Inicio
+      </a>
+      <a href="solicitar-mudanza.html" class="active">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Solicitar
+      </a>
+      <a href="seguimiento.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        Seguimiento
+      </a>
+      <a href="historial-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Historial
+      </a>
+      <a href="perfil-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+        Perfil
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar" style="background:#8B5CF6">AG</div>
+        <div class="user-details">
+          <div class="user-name">Ana García</div>
+          <div class="user-role">Cliente</div>
+        </div>
+      </div>
+      <a href="login.html" style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--neutral-400);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--neutral-100);" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--neutral-400)'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Cerrar sesión
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Solicitar mudanza</h1>
+        <p class="subtitle">Completa los datos de tu mudanza</p>
+      </div>
+    </div>
+
+    <div class="page-body">
+
+      <!-- Steps Indicator -->
+      <div class="steps" id="steps-indicator" style="margin-bottom:2rem">
+        <div class="step">
+          <div class="step-circle active" id="circle-1">1</div>
+          <span class="step-label active" id="label-1">Solicitud</span>
+        </div>
+        <div class="step-line" id="line-1"></div>
+        <div class="step">
+          <div class="step-circle" id="circle-2">2</div>
+          <span class="step-label" id="label-2">Proveedor</span>
+        </div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step">
+          <div class="step-circle" id="circle-3">3</div>
+          <span class="step-label" id="label-3">Pago</span>
+        </div>
+        <div class="step-line" id="line-3"></div>
+        <div class="step">
+          <div class="step-circle" id="circle-4">4</div>
+          <span class="step-label" id="label-4">Servicio</span>
+        </div>
+        <div class="step-line" id="line-4"></div>
+        <div class="step">
+          <div class="step-circle" id="circle-5">5</div>
+          <span class="step-label" id="label-5">Listo</span>
+        </div>
+      </div>
+
+      <!-- STEP 1: Solicitud -->
+      <div class="step-panel active" id="panel-1">
+        <div class="card" style="max-width:600px">
+          <div class="card-header">
+            <h3 style="font-size:1rem;font-weight:700">Detalles de la mudanza</h3>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:1.25rem">
+            <div class="form-group">
+              <label class="form-label">Dirección de origen</label>
+              <input type="text" class="form-control" id="origen" placeholder="Cra 30 #45-20, Bogotá" value="Cra 30 #45-20, Bogotá">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dirección de destino</label>
+              <input type="text" class="form-control" id="destino" placeholder="Cll 80 #70-15, Bogotá" value="Cll 80 #70-15, Bogotá">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de carga</label>
+              <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+                <button class="carga-tipo-btn selected" onclick="selectCarga(this,'pequeño')" id="btn-carga-pequeno">
+                  <span class="icon">📦</span>Pequeño
+                </button>
+                <button class="carga-tipo-btn" onclick="selectCarga(this,'mediano')" id="btn-carga-mediano">
+                  <span class="icon">🛋️</span>Mediano
+                </button>
+                <button class="carga-tipo-btn" onclick="selectCarga(this,'grande')" id="btn-carga-grande">
+                  <span class="icon">🏠</span>Grande
+                </button>
+              </div>
+            </div>
+            <div class="grid-2" style="gap:1rem">
+              <div class="form-group">
+                <label class="form-label">Fecha preferida</label>
+                <input type="date" class="form-control" id="fecha" value="2026-08-10">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hora aproximada</label>
+                <input type="time" class="form-control" id="hora" value="09:00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">¿Necesitas ayudantes?</label>
+              <select class="form-control" id="ayudantes">
+                <option value="0">Sin ayudantes</option>
+                <option value="1">1 ayudante</option>
+                <option value="2" selected>2 ayudantes</option>
+                <option value="3">3 ayudantes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Descripción adicional (opcional)</label>
+              <textarea class="form-control" rows="3" placeholder="Describe objetos especiales, instrucciones de acceso..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="goToStep(2)" id="btn-step1-next">Buscar proveedores →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Elegir Proveedor -->
+      <div class="step-panel" id="panel-2">
+        <div style="max-width:640px">
+          <div class="alert alert-info" style="margin-bottom:1.25rem">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>3 proveedores disponibles para tu solicitud. Selecciona el que prefieras.</span>
+          </div>
+
+          <div class="cotizaciones-section">
+            <div class="cotizacion-card selected" id="cot-1" onclick="selectCotizacion('cot-1')">
+              <div class="avatar avatar-lg avatar-green">CR</div>
+              <div>
+                <div style="font-weight:700;font-size:0.9375rem;color:var(--neutral-900)">Carlos Ruiz</div>
+                <div style="font-size:0.75rem;color:var(--neutral-500);margin-top:2px">Toyota Dyna · ABC-123</div>
+                <div class="stars" style="font-size:0.75rem;margin-top:4px">★★★★★ <span style="color:var(--neutral-700);font-weight:600">4.9</span> (234 viajes)</div>
+              </div>
+              <span class="badge badge-blue" style="margin-left:0.5rem">Verificado</span>
+              <div class="cotizacion-precio">
+                <div class="precio">$175.000</div>
+                <div class="tipo">Camión mediano</div>
+              </div>
+            </div>
+
+            <div class="cotizacion-card" id="cot-2" onclick="selectCotizacion('cot-2')">
+              <div class="avatar avatar-lg" style="background:#F97316">JM</div>
+              <div>
+                <div style="font-weight:700;font-size:0.9375rem;color:var(--neutral-900)">Jhon Morales</div>
+                <div style="font-size:0.75rem;color:var(--neutral-500);margin-top:2px">Ford Transit · XYZ-789</div>
+                <div class="stars" style="font-size:0.75rem;margin-top:4px">★★★★½ <span style="color:var(--neutral-700);font-weight:600">4.7</span> (118 viajes)</div>
+              </div>
+              <span class="badge badge-blue" style="margin-left:0.5rem">Verificado</span>
+              <div class="cotizacion-precio">
+                <div class="precio">$160.000</div>
+                <div class="tipo">Van</div>
+              </div>
+            </div>
+
+            <div class="cotizacion-card" id="cot-3" onclick="selectCotizacion('cot-3')">
+              <div class="avatar avatar-lg" style="background:#8B5CF6">AC</div>
+              <div>
+                <div style="font-weight:700;font-size:0.9375rem;color:var(--neutral-900)">Andrés Castillo</div>
+                <div style="font-size:0.75rem;color:var(--neutral-500);margin-top:2px">Isuzu NPR · DEF-456</div>
+                <div class="stars" style="font-size:0.75rem;margin-top:4px">★★★★½ <span style="color:var(--neutral-700);font-weight:600">4.5</span> (87 viajes)</div>
+              </div>
+              <span class="badge badge-blue" style="margin-left:0.5rem">Verificado</span>
+              <div class="cotizacion-precio">
+                <div class="precio">$195.000</div>
+                <div class="tipo">Camión grande</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:1rem;margin-top:1.5rem">
+            <button class="btn btn-ghost" onclick="goToStep(1)" id="btn-step2-back">← Volver</button>
+            <button class="btn btn-primary" onclick="goToStep(3)" id="btn-step2-next">Continuar con pago →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Pago -->
+      <div class="step-panel" id="panel-3">
+        <div class="grid-2" style="max-width:900px;gap:1.5rem">
+          <div>
+            <div class="card" style="margin-bottom:1rem">
+              <div class="card-header">
+                <h3 style="font-size:1rem;font-weight:700">Método de pago</h3>
+              </div>
+              <div class="card-body" style="display:flex;flex-direction:column;gap:1.25rem">
+                <div style="display:flex;gap:0.75rem">
+                  <button class="carga-tipo-btn selected" onclick="selectPayment(this)" id="btn-pay-card">
+                    <span class="icon">💳</span>Tarjeta
+                  </button>
+                  <button class="carga-tipo-btn" onclick="selectPayment(this)" id="btn-pay-pse">
+                    <span class="icon">🏦</span>PSE
+                  </button>
+                  <button class="carga-tipo-btn" onclick="selectPayment(this)" id="btn-pay-cash">
+                    <span class="icon">💵</span>Efectivo
+                  </button>
+                </div>
+                <div id="card-fields">
+                  <div class="form-group" style="margin-bottom:1rem">
+                    <label class="form-label">Número de tarjeta</label>
+                    <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+                  </div>
+                  <div class="grid-2" style="gap:1rem">
+                    <div class="form-group">
+                      <label class="form-label">Vencimiento</label>
+                      <input type="text" class="form-control" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">CVV</label>
+                      <input type="text" class="form-control" placeholder="123" maxlength="3">
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top:1rem">
+                    <label class="form-label">Nombre en la tarjeta</label>
+                    <input type="text" class="form-control" placeholder="ANA GARCIA" value="ANA GARCIA">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem">
+              <button class="btn btn-ghost" onclick="goToStep(2)" id="btn-step3-back">← Volver</button>
+              <button class="btn btn-primary" onclick="procesarPago()" id="btn-pagar">Confirmar pago</button>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size:1rem;font-weight:700">Resumen del servicio</h3>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;padding:0.875rem;background:var(--neutral-50);border-radius:var(--radius-md)">
+                <div class="avatar avatar-lg avatar-green">CR</div>
+                <div>
+                  <div style="font-weight:700;font-size:0.875rem">Carlos Ruiz</div>
+                  <div style="font-size:0.75rem;color:var(--neutral-500)">Toyota Dyna · ABC-123</div>
+                  <div class="stars" style="font-size:0.75rem">★★★★★ 4.9</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.75rem;font-size:0.875rem">
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--neutral-600)">Origen</span>
+                  <span style="font-weight:600;text-align:right">Cra 30 #45-20</span>
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--neutral-600)">Destino</span>
+                  <span style="font-weight:600;text-align:right">Cll 80 #70-15</span>
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--neutral-600)">Fecha</span>
+                  <span style="font-weight:600">Dom 10 Ago · 09:00</span>
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--neutral-600)">Tipo de carga</span>
+                  <span style="font-weight:600">Mediano · 2 ayudantes</span>
+                </div>
+                <div class="divider"></div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--neutral-600)">Subtotal</span>
+                  <span style="font-weight:600">$175.000</span>
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--neutral-600)">Comisión plataforma</span>
+                  <span style="font-weight:600">$0</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:1rem">
+                  <span style="font-weight:700;color:var(--neutral-900)">Total</span>
+                  <span style="font-weight:800;color:var(--primary)">$175.000</span>
+                </div>
+              </div>
+              <div class="alert alert-success" style="margin-top:1rem;font-size:0.8125rem">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Tu dinero está protegido hasta confirmar la entrega.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 / 5: handled by separate pages -->
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+let currentStep = 1;
+
+function goToStep(n) {
+  // Hide all panels
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + n).classList.add('active');
+
+  // Update step circles
+  for (let i = 1; i <= 5; i++) {
+    const circle = document.getElementById('circle-' + i);
+    const label  = document.getElementById('label-' + i);
+    circle.classList.remove('active', 'done');
+    label.classList.remove('active', 'done');
+    if (i < n) { circle.classList.add('done'); circle.textContent = '✓'; label.classList.add('done'); }
+    else if (i === n) { circle.classList.add('active'); circle.textContent = i; label.classList.add('active'); }
+    else { circle.textContent = i; }
+  }
+  for (let i = 1; i <= 4; i++) {
+    const line = document.getElementById('line-' + i);
+    if (line) line.classList.toggle('done', i < n);
+  }
+
+  currentStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectCarga(btn, type) {
+  document.querySelectorAll('.carga-tipo-btn').forEach(b => {
+    if (b.parentElement === btn.parentElement) b.classList.remove('selected');
+  });
+  btn.classList.add('selected');
+}
+
+function selectPayment(btn) {
+  document.querySelectorAll('#panel-3 .carga-tipo-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function selectCotizacion(id) {
+  document.querySelectorAll('.cotizacion-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(id).classList.add('selected');
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 16);
+  input.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+
+function procesarPago() {
+  const btn = document.getElementById('btn-pagar');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin" width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="60" stroke-dashoffset="20"/></svg> Procesando...';
+  setTimeout(() => {
+    window.location.href = 'seguimiento.html';
+  }, 1800);
+}
+</script>
+</body>
+</html>

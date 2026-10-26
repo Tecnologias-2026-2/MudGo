@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – MudGo Cliente</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .welcome-card {
+      background: linear-gradient(135deg, #0052CC 0%, #0066FF 60%, #3385FF 100%);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: var(--space-6);
+    }
+    .welcome-card::after {
+      content: '🚛';
+      position: absolute;
+      right: 2rem;
+      bottom: -0.5rem;
+      font-size: 6rem;
+      opacity: 0.12;
+    }
+    .welcome-card h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .welcome-card p  { color: rgba(255,255,255,0.8); }
+    .welcome-card .btn-white { margin-top: 1.5rem; }
+
+    .active-service-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--primary-200);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-blue);
+    }
+    .service-track {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--primary-50);
+      border-radius: var(--radius-md);
+      margin: 1rem 0;
+    }
+    .track-icon { font-size: 2rem; }
+    .track-info { flex: 1; }
+    .track-info .route { font-weight: 600; font-size: 0.875rem; color: var(--neutral-900); }
+    .track-info .driver { font-size: 0.8125rem; color: var(--neutral-500); margin-top: 2px; }
+    .track-eta { text-align: right; }
+    .track-eta .eta-val { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+    .track-eta .eta-lbl { font-size: 0.625rem; color: var(--neutral-500); font-weight: 600; }
+
+    .history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.875rem var(--space-5);
+      border-bottom: 1px solid var(--neutral-100);
+      transition: background var(--transition-fast);
+    }
+    .history-row:hover { background: var(--neutral-50); }
+    .history-row:last-child { border-bottom: none; }
+    .history-id { font-weight: 700; font-size: 0.875rem; color: var(--neutral-900); }
+    .history-route { font-size: 0.8125rem; color: var(--neutral-500); margin-top: 2px; }
+    .history-right { text-align: right; }
+    .history-price { font-weight: 700; font-size: 0.875rem; color: var(--neutral-900); }
+    .history-date  { font-size: 0.75rem; color: var(--neutral-400); margin-top: 2px; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">M</div>
+      <span style="font-size:1.125rem;font-weight:800;color:var(--neutral-900);letter-spacing:-0.5px">MudGo</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard-cliente.html" class="active">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Inicio
+      </a>
+      <a href="solicitar-mudanza.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Solicitar
+      </a>
+      <a href="seguimiento.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        Seguimiento
+      </a>
+      <a href="historial-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Historial
+      </a>
+      <a href="perfil-cliente.html">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>
+        Perfil
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar" style="background:#8B5CF6">AG</div>
+        <div class="user-details">
+          <div class="user-name">Ana García</div>
+          <div class="user-role">Cliente</div>
+        </div>
+      </div>
+      <a href="login.html" style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--neutral-400);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--neutral-100);transition:color 0.2s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--neutral-400)'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Cerrar sesión
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Inicio</h1>
+        <p class="subtitle">Domingo, 10 de agosto 2026</p>
+      </div>
+      <a href="solicitar-mudanza.html" class="btn btn-primary btn-sm" id="btn-nueva-solicitud">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva solicitud
+      </a>
+    </div>
+
+    <div class="page-body">
+      <!-- Welcome Card -->
+      <div class="welcome-card animate-fade-in">
+        <p style="font-size:0.875rem;color:rgba(255,255,255,0.7);font-weight:600;margin-bottom:0.25rem">¡Hola, Ana! 👋</p>
+        <h2>¿Lista para tu próxima mudanza?</h2>
+        <p>Cotiza, compara y mueve en minutos.</p>
+        <a href="solicitar-mudanza.html" class="btn btn-white btn-sm" id="btn-welcome-solicitar">Solicitar mudanza →</a>
+      </div>
+
+      <!-- Active Service -->
+      <div class="card animate-fade-in" style="margin-bottom:var(--space-6)">
+        <div class="card-header">
+          <div>
+            <h3 style="font-size:1rem;font-weight:700;color:var(--neutral-900)">Servicio activo</h3>
+            <p style="font-size:0.8125rem;color:var(--neutral-500);margin-top:2px">#MG-043 · En camino</p>
+          </div>
+          <span class="badge badge-blue">En curso</span>
+        </div>
+        <div class="card-body">
+          <div class="service-track">
+            <div class="track-icon">🚛</div>
+            <div class="track-info">
+              <div class="route">Cra 30 #45-20 → Cll 80 #70-15</div>
+              <div class="driver">Carlos R. · Toyota Dyna · ABC-123 ★ 4.9</div>
+            </div>
+            <div class="track-eta">
+              <div class="eta-val">~12</div>
+              <div class="eta-lbl">MIN</div>
+            </div>
+          </div>
+          <a href="seguimiento.html" class="btn btn-primary btn-sm" id="btn-ver-seguimiento">Ver seguimiento en vivo</a>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid-3 stat-cards" style="margin-bottom:var(--space-6)">
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <div class="stat-label">Mudanzas realizadas</div>
+          <div class="stat-value">4</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="stat-label">Calificación promedio</div>
+          <div class="stat-value">4.8 ★</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <div class="stat-label">Gasto total</div>
+          <div class="stat-value">$596K</div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="card-header">
+          <h3 style="font-size:1rem;font-weight:700;color:var(--neutral-900)">Historial reciente</h3>
+          <a href="historial-cliente.html" class="btn btn-ghost btn-sm" id="btn-ver-historial">Ver todo →</a>
+        </div>
+        <div>
+          <div class="history-row">
+            <div>
+              <div class="history-id">#MG-040</div>
+              <div class="history-route">Cll 72 #10-45 → El Dorado #68C</div>
+            </div>
+            <div class="history-right">
+              <div class="history-price">$198.450</div>
+              <div class="history-date">Sáb 9 Ago 2026</div>
+              <span class="badge badge-green" style="margin-top:4px">Finalizado</span>
+            </div>
+          </div>
+          <div class="history-row">
+            <div>
+              <div class="history-id">#MG-035</div>
+              <div class="history-route">Cra 15 #93-75 → Cll 100 #19-55</div>
+            </div>
+            <div class="history-right">
+              <div class="history-price">$178.000</div>
+              <div class="history-date">Jue 7 Ago 2026</div>
+              <span class="badge badge-green" style="margin-top:4px">Finalizado</span>
+            </div>
+          </div>
+          <div class="history-row">
+            <div>
+              <div class="history-id">#MG-031</div>
+              <div class="history-route">Cll 45 #27-30 → Cra 68 #22-10</div>
+            </div>
+            <div class="history-right">
+              <div class="history-price">$108.000</div>
+              <div class="history-date">Lun 4 Ago 2026</div>
+              <span class="badge badge-green" style="margin-top:4px">Finalizado</span>
+            </div>
+          </div>
+          <div class="history-row">
+            <div>
+              <div class="history-id">#MG-028</div>
+              <div class="history-route">Cll 45 #27-30 → Cra 68 #22-10</div>
+            </div>
+            <div class="history-right">
+              <div class="history-price">$0</div>
+              <div class="history-date">Dom 3 Ago 2026</div>
+              <span class="badge badge-red" style="margin-top:4px">Cancelado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

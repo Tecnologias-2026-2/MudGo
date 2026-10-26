@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MudGo – Conectamos personas con los mejores proveedores de transporte. Cotiza, compara y mueve en minutos. Disponible en toda Colombia.">
+  <title>MudGo – Tu mudanza, rápida y segura</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav-header" id="main-nav">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-mark">M</div>
+          <span class="logo-name">MudGo</span>
+        </a>
+
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#como-funciona" class="nav-link">Cómo funciona</a></li>
+          <li><a href="#servicios" class="nav-link">Servicios</a></li>
+          <li><a href="#proveedores" class="nav-link">Proveedores</a></li>
+          <li><a href="#testimonios" class="nav-link">Testimonios</a></li>
+          <li><a href="#faq" class="nav-link">FAQ</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a href="login.html" class="btn btn-ghost btn-sm" id="btn-login">Iniciar sesión</a>
+          <a href="registro.html" class="btn btn-primary btn-sm" id="btn-solicitar">Solicitar mudanza</a>
+        </div>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-bg">
+      <div class="hero-blob hero-blob-1"></div>
+      <div class="hero-blob hero-blob-2"></div>
+      <div class="hero-grid"></div>
+    </div>
+
+    <div class="container hero-container">
+      <!-- Left Content -->
+      <div class="hero-content animate-fade-in-up">
+        <div class="hero-badge">
+          <span class="badge badge-blue">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            Disponible en toda Colombia
+          </span>
+        </div>
+
+        <h1 class="hero-title">
+          Tu mudanza, <br>
+          <span class="hero-title-highlight">rápida y segura</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Conectamos personas con los mejores proveedores de transporte.
+          Cotiza, compara y mueve en minutos.
+        </p>
+
+        <div class="hero-actions">
+          <a href="registro.html" class="btn btn-primary btn-lg" id="btn-hero-solicitar">
+            Solicitar mudanza
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#como-funciona" class="btn btn-outline btn-lg" id="btn-como-funciona">
+            Cómo funciona
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">50K+</div>
+            <div class="hero-stat-label">Mudanzas</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">3.8K+</div>
+            <div class="hero-stat-label">Conductores</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">4.9 ★</div>
+            <div class="hero-stat-label">Calificación</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: UI Card -->
+      <div class="hero-visual animate-fade-in">
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <div class="status-dot active"></div>
+            <span>Tu mudanza está en camino</span>
+          </div>
+          <div class="hero-card-driver">
+            <div class="avatar avatar-lg avatar-green">CR</div>
+            <div class="driver-info">
+              <div class="driver-name">Carlos R.</div>
+              <div class="driver-sub">Toyota Dyna · ABC-123</div>
+              <div class="driver-stars">★★★★★ <span>4.9</span></div>
+            </div>
+            <div class="driver-eta">
+              <div class="eta-value">~12</div>
+              <div class="eta-unit">min</div>
+            </div>
+          </div>
+          <div class="hero-card-map">
+            <div class="map-route">
+              <div class="map-dot map-dot-origin"></div>
+              <div class="map-line">
+                <div class="map-line-fill"></div>
+              </div>
+              <div class="map-dot map-dot-dest"></div>
+            </div>
+            <div class="map-truck">🚛</div>
+          </div>
+          <div class="hero-card-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+            Verificado por MudGo
+          </div>
+        </div>
+
+        <!-- Floating chips -->
+        <div class="float-chip chip-1">
+          <svg width="14" height="14" fill="#10B981" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Entrega confirmada
+        </div>
+        <div class="float-chip chip-2">
+          <svg width="14" height="14" fill="#0066FF" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/></svg>
+          Seguro incluido
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section class="section why-section" id="por-que">
+    <div class="container">
+      <div class="section-header text-center">
+        <p class="section-label">Por qué elegirnos</p>
+        <h2 class="section-title">La plataforma más confiable</h2>
+      </div>
+
+      <div class="grid-4 why-grid">
+        <div class="why-card animate-on-scroll">
+          <div class="why-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3>Conductores verificados</h3>
+          <p>Todos nuestros proveedores pasan por verificación rigurosa de identidad, antecedentes y vehículo.</p>
+        </div>
+
+        <div class="why-card animate-on-scroll" style="animation-delay:.1s">
+          <div class="why-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3>Cotización rápida</h3>
+          <p>Recibe múltiples cotizaciones en minutos. Compara precios, calificaciones y elige la mejor opción.</p>
+        </div>
+
+        <div class="why-card animate-on-scroll" style="animation-delay:.2s">
+          <div class="why-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+          </div>
+          <h3>Seguimiento en tiempo real</h3>
+          <p>Sigue tu mudanza en vivo desde la app. Sabe dónde está tu carga en todo momento.</p>
+        </div>
+
+        <div class="why-card animate-on-scroll" style="animation-delay:.3s">
+          <div class="why-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3>Pagos seguros</h3>
+          <p>Tu dinero está protegido hasta que confirmes la entrega. Sin cobros ocultos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section how-section" id="como-funciona">
+    <div class="container">
+      <div class="section-header text-center">
+        <p class="section-label">Proceso simple</p>
+        <h2 class="section-title">¿Cómo funciona MudGo?</h2>
+      </div>
+
+      <div class="how-steps">
+        <div class="how-step animate-on-scroll">
+          <div class="how-number">01</div>
+          <div class="how-content">
+            <h3>Registra tu solicitud</h3>
+            <p>Describe tu mudanza: origen, destino, tipo de carga y fecha preferida.</p>
+          </div>
+        </div>
+        <div class="how-connector"></div>
+        <div class="how-step animate-on-scroll" style="animation-delay:.1s">
+          <div class="how-number">02</div>
+          <div class="how-content">
+            <h3>Recibe una cotización</h3>
+            <p>Proveedores cercanos envían sus ofertas. Compara precio y calificación.</p>
+          </div>
+        </div>
+        <div class="how-connector"></div>
+        <div class="how-step animate-on-scroll" style="animation-delay:.2s">
+          <div class="how-number">03</div>
+          <div class="how-content">
+            <h3>Elige un proveedor</h3>
+            <p>Selecciona al conductor que mejor se adapte a tu presupuesto.</p>
+          </div>
+        </div>
+        <div class="how-connector"></div>
+        <div class="how-step animate-on-scroll" style="animation-delay:.3s">
+          <div class="how-number">04</div>
+          <div class="how-content">
+            <h3>Sigue tu mudanza</h3>
+            <p>Monitorea en tiempo real hasta que tu carga llegue al destino.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section services-section" id="servicios">
+    <div class="container">
+      <div class="section-header text-center">
+        <p class="section-label">Nuestros servicios</p>
+        <h2 class="section-title">Soluciones para cada necesidad</h2>
+      </div>
+
+      <div class="grid-2 services-grid">
+        <div class="service-card service-card-popular animate-on-scroll">
+          <div class="service-badge">Popular</div>
+          <div class="service-icon">🏠</div>
+          <h3>Mudanzas residenciales</h3>
+          <p>Traslado completo con embalaje opcional y cuidado de objetos frágiles.</p>
+          <a href="solicitar-mudanza.html" class="btn btn-primary btn-sm service-btn" id="btn-svc-residencial">Solicitar</a>
+        </div>
+
+        <div class="service-card animate-on-scroll" style="animation-delay:.1s">
+          <div class="service-icon">🛋️</div>
+          <h3>Transporte de muebles</h3>
+          <p>Mueve sofás, camas y electrodomésticos con transportistas especializados.</p>
+          <a href="solicitar-mudanza.html" class="btn btn-outline btn-sm service-btn" id="btn-svc-muebles">Solicitar</a>
+        </div>
+
+        <div class="service-card animate-on-scroll" style="animation-delay:.2s">
+          <div class="service-icon">📦</div>
+          <h3>Carga ligera</h3>
+          <p>Envíos rápidos de paquetes y objetos pequeños dentro de la ciudad.</p>
+          <a href="solicitar-mudanza.html" class="btn btn-outline btn-sm service-btn" id="btn-svc-ligera">Solicitar</a>
+        </div>
+
+        <div class="service-card animate-on-scroll" style="animation-delay:.3s">
+          <div class="service-icon">🏢</div>
+          <h3>Traslados para negocios</h3>
+          <p>Soluciones de transporte para oficinas y pequeñas empresas.</p>
+          <a href="solicitar-mudanza.html" class="btn btn-outline btn-sm service-btn" id="btn-svc-negocios">Solicitar</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVIDERS CTA -->
+  <section class="section provider-cta-section" id="proveedores">
+    <div class="container">
+      <div class="provider-cta-card">
+        <div class="provider-cta-content">
+          <p class="section-label light">Para conductores y proveedores</p>
+          <h2>Genera ingresos con tu vehículo de carga</h2>
+          <p class="provider-cta-desc">
+            Únete a la red de proveedores de MudGo y recibe solicitudes cerca de ti. Sin tarifas de inscripción.
+          </p>
+          <a href="registro.html?tipo=proveedor" class="btn btn-white btn-lg" id="btn-register-provider">
+            Registrarme como proveedor
+          </a>
+        </div>
+
+        <div class="provider-benefits">
+          <div class="benefit">
+            <span class="benefit-icon">💰</span>
+            <span>Ingresos flexibles – Trabaja cuando quieras.</span>
+          </div>
+          <div class="benefit">
+            <span class="benefit-icon">⚡</span>
+            <span>Pago rápido – Cobra automáticamente.</span>
+          </div>
+          <div class="benefit">
+            <span class="benefit-icon">📱</span>
+            <span>App fácil de usar – Gestiona desde tu celular.</span>
+          </div>
+          <div class="benefit">
+            <span class="benefit-icon">👥</span>
+            <span>Más clientes – Miles de usuarios te esperan.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section testimonials-section" id="testimonios">
+    <div class="container">
+      <div class="section-header text-center">
+        <p class="section-label">Testimonios</p>
+        <h2 class="section-title">Lo que dicen nuestros usuarios</h2>
+      </div>
+
+      <div class="grid-3 testimonials-grid">
+        <div class="testimonial-card animate-on-scroll">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">En menos de 2 horas tuve 4 cotizaciones. El conductor fue puntual, cuidadoso y muy profesional.</p>
+          <div class="testimonial-author">
+            <div class="avatar avatar-sm" style="background:#8B5CF6">AM</div>
+            <div>
+              <div class="author-name">Andrea Morales</div>
+              <div class="author-meta">Mudanza residencial · Bogotá</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card animate-on-scroll" style="animation-delay:.1s">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">Moví mi sala completa sin ningún inconveniente. El seguimiento en tiempo real me dio mucha tranquilidad.</p>
+          <div class="testimonial-author">
+            <div class="avatar avatar-sm" style="background:#F97316">CR</div>
+            <div>
+              <div class="author-name">Carlos Restrepo</div>
+              <div class="author-meta">Transporte de muebles · Medellín</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card animate-on-scroll" style="animation-delay:.2s">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">MudGo me conectó con un proveedor en 30 minutos. Servicio rápido, seguro y a buen precio.</p>
+          <div class="testimonial-author">
+            <div class="avatar avatar-sm" style="background:#10B981">LH</div>
+            <div>
+              <div class="author-name">Luis Herrera</div>
+              <div class="author-meta">Traslado de negocio · Cali</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq-section" id="faq">
+    <div class="container faq-container">
+      <div class="section-header text-center">
+        <p class="section-label">Preguntas frecuentes</p>
+        <h2 class="section-title">¿Tienes dudas?</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item" id="faq-1">
+          <button class="faq-question" onclick="toggleFaq('faq-1')">
+            ¿Cómo realizo una reserva en MudGo?
+            <svg class="faq-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Simplemente crea una cuenta, ingresa los detalles de tu mudanza (origen, destino, tipo de carga, fecha) y recibirás cotizaciones de proveedores verificados en minutos. Elige el que más te convenga y confirma tu reserva.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-2">
+          <button class="faq-question" onclick="toggleFaq('faq-2')">
+            ¿Cómo se procesan los pagos?
+            <svg class="faq-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Los pagos se procesan de forma segura a través de nuestra plataforma. Tu dinero queda en custodia hasta que confirmes la recepción satisfactoria de tu carga. Aceptamos tarjetas débito/crédito y pagos en línea.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-3">
+          <button class="faq-question" onclick="toggleFaq('faq-3')">
+            ¿Qué tan seguros son los conductores?
+            <svg class="faq-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Todos los conductores pasan por un proceso riguroso de verificación que incluye verificación de identidad, revisión de antecedentes judiciales y revisión técnica del vehículo. Solo los conductores aprobados pueden recibir solicitudes.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-4">
+          <button class="faq-question" onclick="toggleFaq('faq-4')">
+            ¿En qué ciudades está disponible MudGo?
+            <svg class="faq-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>MudGo está disponible en las principales ciudades de Colombia: Bogotá, Medellín, Cali, Barranquilla, Cartagena, Bucaramanga y más. Estamos en constante expansión a nuevas ciudades.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-5">
+          <button class="faq-question" onclick="toggleFaq('faq-5')">
+            ¿Qué pasa si hay algún daño durante la mudanza?
+            <svg class="faq-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Todos los servicios incluyen cobertura básica por daños durante el transporte. En caso de incidentes, puedes reportarlo directamente desde la plataforma y nuestro equipo de soporte te acompañará en el proceso de reclamación.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final-section">
+    <div class="container text-center">
+      <h2>Empieza tu mudanza hoy</h2>
+      <p>Solicita tu mudanza ahora mismo. Es gratis, rápido y sin compromisos.</p>
+      <a href="registro.html" class="btn btn-white btn-lg" id="btn-cta-final">
+        Solicitar mudanza ahora
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="nav-brand">
+            <div class="logo-mark">M</div>
+            <span class="logo-name">MudGo</span>
+          </div>
+          <p>La plataforma más confiable para mudanzas en Colombia.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Empresa</h4>
+          <a href="#">Sobre nosotros</a>
+          <a href="#">Blog</a>
+          <a href="#">Careers</a>
+        </div>
+
+        <div class="footer-links">
+          <h4>Servicios</h4>
+          <a href="solicitar-mudanza.html">Solicitar mudanza</a>
+          <a href="registro.html?tipo=proveedor">Ser proveedor</a>
+          <a href="#faq">FAQ</a>
+        </div>
+
+        <div class="footer-links">
+          <h4>Legal</h4>
+          <a href="#">Términos de uso</a>
+          <a href="#">Privacidad</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 MudGo. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
