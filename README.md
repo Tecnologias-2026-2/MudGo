@@ -6,8 +6,9 @@ Escribe aquí una descripción corta del proyecto.
 
 👥 Integrantes
 
-Nombre completo – Código
-Nombre completo – Código
+Mauricio Berrio - 1202894
+María Chambueta - 1203054
+Sebastian Quevedo - 1202830
 
 🎯 1. Objetivo General
 
