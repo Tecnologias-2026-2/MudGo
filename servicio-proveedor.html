@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Servicio – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="proveedor" data-nav="solicitudes" data-page="p-servicio">
+  <div class="app">
+    <main class="main" data-back="dashboard-proveedor.html" data-title="Servicio">
+      <div class="container container--narrow">
+
+        <div id="sv-flow"></div>
+        <header class="page-head" style="margin-bottom:16px">
+          <div><h1 id="sv-title">Servicio #MG-040</h1><p class="page-head__sub" id="sv-when">Sáb 9 Ago · 07:00 AM</p></div>
+          <span data-sv-badge></span>
+        </header>
+        <section class="card">
+          <div class="card__head"><h3>Estado del servicio</h3><span data-sv-badge></span></div>
+          <div class="track-steps" id="sv-steps">
+            <div class="step"><div class="step__dot">1</div><span class="step__label">Confirmado</span></div>
+            <div class="step-line"></div>
+            <div class="step"><div class="step__dot">2</div><span class="step__label">Activo</span></div>
+            <div class="step-line"></div>
+            <div class="step"><div class="step__dot">3</div><span class="step__label">Finalizado</span></div>
+          </div>
+          <div class="notice notice--blue mt-16"><span id="sv-msg">El pago fue recibido. El servicio está listo para iniciar.</span></div>
+        </section>
+        <section class="card"><p class="label-caps mb-16">Cliente</p><div class="row row--between" id="sv-client"></div></section>
+        <section class="card"><p class="label-caps mb-16">Detalles de la mudanza</p><div id="sv-route"></div><div id="sv-details" class="mt-8"></div></section>
+        <section class="card">
+          <p class="label-caps">Pago del servicio</p>
+          <dl class="kv mt-8">
+            <div class="kv__row"><dt class="kv__key">Valor del servicio</dt><dd class="kv__val" id="sv-value">$260.000</dd></div>
+            <div class="kv__row"><dt class="kv__key">Comisión MudGo (10%)</dt><dd class="kv__val" id="sv-fee">-$26.000</dd></div>
+            <div class="kv__row kv__row--total"><dt class="kv__key" style="color:var(--gray-900)">Tus ganancias</dt><dd class="kv__val" style="font-size:22px" id="sv-earn">$234.000</dd></div>
+          </dl>
+          <div class="notice notice--blue mt-8 small">⏳ Se depositará automáticamente al finalizar el servicio</div>
+        </section>
+        <button class="btn btn--primary btn--lg btn--block mt-24" id="sv-action">Iniciar servicio <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/proveedor.js"></script>
+</body>
+</html>

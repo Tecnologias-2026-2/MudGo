@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Perfil proveedor – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="proveedor" data-nav="perfil" data-page="p-perfil">
+  <div class="app">
+    <main class="main">
+      <div class="container container--mid">
+
+        <section class="card text-center" style="padding:28px 20px">
+          <span class="avatar avatar--xl avatar--online" style="margin:0 auto">CR</span>
+          <h1 class="mt-16" style="font-size:20px">Carlos Ruiz Hernández</h1>
+          <p class="small muted">carlos.ruiz@correo.com</p>
+          <p class="small mt-8"><span class="orange">★</span> 4.9 <span class="subtle">· 234 servicios</span> &nbsp; <span class="badge badge--green badge--dot">Verificado</span></p>
+          <div class="mini-stats" style="max-width:420px;margin-inline:auto">
+            <div class="mini-stat"><strong>18</strong><span>Mes</span></div>
+            <div class="mini-stat"><strong>$2.4M</strong><span>Ingresos</span></div>
+            <div class="mini-stat"><strong>2 años</strong><span>Antigüedad</span></div>
+          </div>
+        </section>
+        <section class="card card--flush">
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">👤</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Datos personales</span><span class="list-row__sub">Nombre, correo y teléfono</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <form class="form-grid" data-save="Datos personales actualizados" novalidate>
+                <div class="field span-2"><label for="pp-nombre">Nombre completo</label><input class="input" id="pp-nombre" value="Carlos Ruiz Hernández" autocomplete="name"></div>
+                <div class="field"><label for="pp-correo">Correo</label><input class="input" type="email" id="pp-correo" value="carlos.ruiz@correo.com" autocomplete="email"></div>
+                <div class="field"><label for="pp-tel">Teléfono</label><input class="input" type="tel" id="pp-tel" value="+57 320 485 9012" autocomplete="tel"></div>
+                <div class="span-2"><button class="btn btn--primary" type="submit">Guardar cambios</button></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">📄</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Documentos</span><span class="list-row__sub">Cédula, licencia y SOAT</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <div class="reason-list">
+                <div class="reason"><span class="reason__icon">📄</span><div style="flex:1"><strong>Cédula de ciudadanía</strong><span>PDF o imagen, máx. 5 MB</span></div><span class="badge badge--green">Verificado</span>
+                  <label class="btn btn--ghost btn--sm" style="cursor:pointer">Subir<input type="file" accept=".pdf,image/*" class="sr-only" data-upload></label></div>
+                <div class="reason"><span class="reason__icon">📄</span><div style="flex:1"><strong>Licencia de conducción C2</strong><span>PDF o imagen, máx. 5 MB</span></div><span class="badge badge--green">Verificado</span>
+                  <label class="btn btn--ghost btn--sm" style="cursor:pointer">Subir<input type="file" accept=".pdf,image/*" class="sr-only" data-upload></label></div>
+                <div class="reason"><span class="reason__icon">📄</span><div style="flex:1"><strong>SOAT vigente</strong><span>PDF o imagen, máx. 5 MB</span></div><span class="badge badge--orange">Vence en 45 días</span>
+                  <label class="btn btn--ghost btn--sm" style="cursor:pointer">Subir<input type="file" accept=".pdf,image/*" class="sr-only" data-upload></label></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">🚛</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Mis vehículos</span><span class="list-row__sub" id="pp-veh">2 vehículos registrados</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <p class="small muted">Administra tus vehículos, su capacidad y disponibilidad.</p>
+              <a class="btn btn--soft mt-16" href="vehiculos-proveedor.html">Ir a gestión de vehículos →</a>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">💳</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Datos bancarios</span><span class="list-row__sub">Cuenta para pagos</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <form class="form-grid" data-save="Datos bancarios guardados" novalidate>
+                <div class="field"><label for="pb-banco">Banco</label><select class="select" id="pb-banco"><option>Bancolombia</option><option>Davivienda</option><option>Banco de Bogotá</option><option>BBVA</option><option>Nequi</option></select></div>
+                <div class="field"><label for="pb-tipo">Tipo de cuenta</label><select class="select" id="pb-tipo"><option>Ahorros</option><option>Corriente</option></select></div>
+                <div class="field span-2"><label for="pb-num">Número de cuenta</label><input class="input" id="pb-num" inputmode="numeric" placeholder="•••• •••• 4821"></div>
+                <div class="span-2"><button class="btn btn--primary" type="submit">Guardar</button></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">🔒</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Seguridad</span><span class="list-row__sub">Contraseña y acceso</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <form class="form-grid" data-save="Contraseña actualizada" novalidate>
+                <div class="field span-2"><label for="pp-actual">Contraseña actual</label><input class="input" type="password" id="pp-actual" autocomplete="current-password"></div>
+                <div class="field"><label for="pp-nueva">Nueva contraseña</label><input class="input" type="password" id="pp-nueva" autocomplete="new-password"></div>
+                <div class="field"><label for="pp-conf">Confirmar contraseña</label><input class="input" type="password" id="pp-conf" autocomplete="new-password"></div>
+                <div class="span-2"><button class="btn btn--primary" type="submit">Actualizar contraseña</button></div>
+              </form>
+            </div>
+          </div>
+        </section>
+        <a class="btn btn--danger-soft btn--block mt-16" href="login.html"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Cerrar sesión</a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/proveedor.js"></script>
+</body>
+</html>

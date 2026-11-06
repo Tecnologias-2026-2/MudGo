@@ -230,7 +230,7 @@ function initForms() {
       setLoading(btn, true);
       setTimeout(() => {
         setLoading(btn, false);
-        window.location.href = 'confirmacion-pago.html';
+        window.location.href = 'servicio-confirmado.html';
       }, 1800);
     });
   }

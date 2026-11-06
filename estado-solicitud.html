@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Estado de la solicitud – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="cliente" data-nav="solicitar" data-page="c-estado">
+  <div class="app">
+    <main class="main" data-back="dashboard-cliente.html" data-title="Estado de la solicitud">
+      <div class="container container--narrow">
+
+        <div id="estado-root" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="cancel-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-title" aria-hidden="true">
+    <div class="modal__box">
+      <div class="modal__head"><h3 id="cancel-title">¿Cancelar la solicitud?</h3><button class="modal__close" data-close aria-label="Cerrar"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="modal__body"><p class="muted">Los proveedores dejarán de ver tu solicitud. Como aún no has pagado, no se realizará ningún cobro.</p></div>
+      <div class="modal__foot"><button class="btn btn--outline" data-close>No, mantener</button><button class="btn btn--danger" id="cancel-confirm">Sí, cancelar</button></div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+  <script src="js/cliente.js"></script>
+</body>
+</html>

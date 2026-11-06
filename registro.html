@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crear cuenta — MudGo</title>
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="stylesheet" href="styles.css" />
   <style>
     /* ── Auth Layout ── */
@@ -448,12 +452,12 @@
 
       <!-- User quote -->
       <div class="panel-quote">
-        <p>"Encontré un conductor en menos de 5 minutos. El proceso fue súper sencillo y el precio muy justo. ¡MudGo lo hizo posible!"</p>
+        <p>"MudGo hizo que mi mudanza fuera completamente sin estrés. Un proveedor aceptó mi solicitud en 20 minutos y todo llegó perfecto."</p>
         <div class="quote-author">
-          <div class="quote-avatar">LP</div>
+          <div class="quote-avatar">AR</div>
           <div class="quote-info">
-            <div class="quote-name">Laura Paredes</div>
-            <div class="quote-role">Cliente verificada · CDMX</div>
+            <div class="quote-name">Andrea Romero</div>
+            <div class="quote-role">Cliente verificada · Bogotá</div>
           </div>
         </div>
       </div>
@@ -541,7 +545,7 @@
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1.19h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
               </span>
-              <input class="field-input" type="tel" id="telefono" name="telefono" placeholder="+52 55 0000 0000" autocomplete="tel" required />
+              <input class="field-input" type="tel" id="telefono" name="telefono" placeholder="+57 300 000 0000" autocomplete="tel" required />
             </div>
           </div>
         </div>
@@ -732,7 +736,13 @@
     placaInput.value = placaInput.value.toUpperCase();
     placaInput.setSelectionRange(pos, pos);
   });
+
+  // ── Preseleccionar tipo de cuenta desde la URL (registro.html?tipo=proveedor) ──
+  if (new URLSearchParams(location.search).get('tipo') === 'proveedor') switchTab('proveedor');
 </script>
 
+  <script>
+    if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(function () {});
+  </script>
 </body>
 </html>

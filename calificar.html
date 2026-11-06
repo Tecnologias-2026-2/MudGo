@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Califica tu experiencia – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="cliente" data-nav="historial" data-page="c-calificar">
+  <div class="app">
+    <main class="main" data-back="servicio-finalizado.html" data-title="Calificar">
+      <div class="container container--narrow">
+
+        <header class="page-head page-head--center">
+          <span class="avatar avatar--xl">CR</span>
+          <div class="mt-16"><h1 style="font-size:20px">Califica tu experiencia</h1><p class="page-head__sub">Con Carlos Ruiz Hernández</p></div>
+        </header>
+        <form id="rate-form">
+          <section class="card text-center">
+            <p class="mb-16">¿Cómo fue el servicio?</p>
+            <div class="rating-input" id="rating" role="group" aria-label="Calificación de 1 a 5 estrellas">
+              <button type="button" aria-label="1 estrella" aria-pressed="false">★</button>
+              <button type="button" aria-label="2 estrellas" aria-pressed="false">★</button>
+              <button type="button" aria-label="3 estrellas" aria-pressed="false">★</button>
+              <button type="button" aria-label="4 estrellas" aria-pressed="false">★</button>
+              <button type="button" aria-label="5 estrellas" aria-pressed="false">★</button>
+            </div>
+            <p class="small orange mt-8" id="rating-label" aria-live="polite">&nbsp;</p>
+          </section>
+          <section class="card">
+            <p class="mb-16">¿Qué destacas? <span class="subtle">(opcional)</span></p>
+            <div class="chip-group">
+              <label class="chip"><input type="checkbox" name="destaca" value="puntualidad">Puntualidad</label>
+              <label class="chip"><input type="checkbox" name="destaca" value="cuidado">Cuidado de objetos</label>
+              <label class="chip"><input type="checkbox" name="destaca" value="amabilidad">Amabilidad</label>
+              <label class="chip"><input type="checkbox" name="destaca" value="comunicacion">Comunicación</label>
+            </div>
+          </section>
+          <section class="card">
+            <label for="comentario" class="field__label">Comentario <span class="subtle">(opcional)</span></label>
+            <textarea class="textarea mt-8" id="comentario" maxlength="500" placeholder="Cuéntanos sobre tu experiencia con el servicio..."></textarea>
+          </section>
+          <div class="btn-stack">
+            <button type="submit" class="btn btn--primary btn--lg" id="rate-send" disabled>Enviar calificación <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            <button type="button" class="btn btn--ghost" id="rate-skip">Omitir</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/cliente.js"></script>
+</body>
+</html>
