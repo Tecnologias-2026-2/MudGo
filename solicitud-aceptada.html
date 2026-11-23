@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Solicitud aceptada – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="proveedor" data-nav="solicitudes" data-page="p-aceptada">
+  <div class="app">
+    <main class="main" data-back="solicitudes-proveedor.html" data-title="Solicitud aceptada">
+      <div class="container container--narrow">
+
+        <div class="text-center" style="margin:8px 0 24px">
+          <div class="status-icon status-icon--green status-icon--lg"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h1 class="mt-16" style="font-size:22px">¡Solicitud aceptada!</h1>
+          <p class="page-head__sub">El cliente será notificado y procederá a pagar</p>
+        </div>
+        <section class="card">
+          <div class="card__head"><h3>Estado del flujo</h3></div>
+          <div class="track-steps" id="pa-steps"></div>
+          <div class="notice notice--blue mt-16" id="pa-msg"></div>
+        </section>
+        <section class="card"><p class="label-caps mb-16">Cliente</p><div id="pa-client"></div></section>
+        <section class="card"><p class="label-caps mb-16">Detalles del servicio</p><div id="pa-route"></div><div id="pa-details" class="mt-8"></div></section>
+        <section class="card card--blue row row--between">
+          <div><div class="small blue">Valor del servicio</div><div class="blue" style="font-size:24px" id="pa-value">$175.000</div></div>
+          <div class="small subtle text-right" style="max-width:180px">Recibirás el pago cuando el cliente confirme</div>
+        </section>
+        <div class="btn-stack">
+          <a class="btn btn--primary btn--lg" id="pa-detail" href="servicio-proveedor.html">Ver detalle del servicio <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a class="btn btn--ghost" href="solicitudes-proveedor.html">Volver a solicitudes</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/proveedor.js"></script>
+</body>
+</html>

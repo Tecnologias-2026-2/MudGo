@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Inicio – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="cliente" data-nav="inicio" data-page="c-dashboard">
+  <div class="app">
+    <main class="main">
+      <div class="container">
+
+        <header class="page-head">
+          <div>
+            <p class="page-head__eyebrow" data-today>Domingo, 9 de agosto 2026</p>
+            <h1>Hola, Ana 👋</h1>
+          </div>
+          <a class="icon-btn" href="estado-solicitud.html" aria-label="Notificaciones"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="icon-btn__dot"></span></a>
+        </header>
+
+        <section class="hero-card">
+          <p>¿Listo para mover?</p>
+          <h2>Solicita tu mudanza ahora</h2>
+          <a class="btn btn--orange" href="solicitar-mudanza.html"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Solicitar mudanza</a>
+        </section>
+
+        <section class="card mt-24 hidden" id="active" aria-live="polite"></section>
+        <section class="card card--orange mt-24 hidden" id="pending" aria-live="polite" style="background:#fff"></section>
+
+        <nav class="quick-grid mt-24" aria-label="Accesos rápidos">
+          <a class="quick" href="solicitar-mudanza.html"><span>📦</span><span>Solicitar</span></a>
+          <a class="quick" href="seguimiento.html"><span>📍</span><span>Seguimiento</span></a>
+          <a class="quick" href="historial-cliente.html"><span>📋</span><span>Historial</span></a>
+          <a class="quick" href="perfil-cliente.html"><span>👤</span><span>Perfil</span></a>
+        </nav>
+
+        <section class="card card--flush mt-24">
+          <div class="row row--between" style="padding:16px 20px;border-bottom:1px solid var(--border)">
+            <h3 style="font-size:14px">Historial reciente</h3>
+            <a class="btn btn--link" href="historial-cliente.html">Ver todo →</a>
+          </div>
+          <div id="recent"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/cliente.js"></script>
+</body>
+</html>

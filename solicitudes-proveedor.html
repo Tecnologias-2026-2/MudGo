@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Solicitudes – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="proveedor" data-nav="solicitudes" data-page="p-solicitudes">
+  <div class="app">
+    <main class="main" data-back="dashboard-proveedor.html" data-title="Solicitudes">
+      <div class="container container--mid">
+
+        <header class="page-head">
+          <div><h1>Solicitudes de servicio</h1><p class="page-head__sub" id="req-sub">2 pendientes de respuesta</p></div>
+        </header>
+        <div class="toolbar">
+          <div class="tabs" id="req-tabs" role="tablist" aria-label="Filtrar solicitudes">
+            <button class="tab is-active" role="tab" data-filter="todas">Todas</button>
+            <button class="tab" role="tab" data-filter="pendientes">Pendientes <span class="tab__count" id="tab-pend-count">2</span></button>
+            <button class="tab" role="tab" data-filter="aceptadas">Aceptadas</button>
+            <button class="tab" role="tab" data-filter="rechazadas">Rechazadas</button>
+          </div>
+        </div>
+        <div class="stack" id="req-list" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="reject-modal" role="dialog" aria-modal="true" aria-labelledby="reject-title" aria-hidden="true">
+    <div class="modal__box">
+      <div class="modal__head"><h3 id="reject-title">Rechazar solicitud <span class="blue" id="reject-id"></span></h3><button class="modal__close" data-close aria-label="Cerrar"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="modal__body">
+        <p class="small muted mb-16">Cuéntanos el motivo. MudGo asignará la solicitud a otro proveedor y el cliente no verá tu respuesta.</p>
+        <fieldset class="radio-list" style="border:0;padding:0;margin:0">
+          <legend class="sr-only">Motivo del rechazo</legend>
+          <label class="radio-item"><input type="radio" name="motivo" value="fecha" checked>No tengo disponibilidad para esa fecha</label>
+          <label class="radio-item"><input type="radio" name="motivo" value="horario">El horario no es compatible con mi agenda</label>
+          <label class="radio-item"><input type="radio" name="motivo" value="carga">El tipo de carga no corresponde a mi vehículo</label>
+          <label class="radio-item"><input type="radio" name="motivo" value="zona">La distancia es mayor a mi zona de operación</label>
+          <label class="radio-item"><input type="radio" name="motivo" value="otro">Otro motivo</label>
+        </fieldset>
+      </div>
+      <div class="modal__foot"><button class="btn btn--outline" data-close>Cancelar</button><button class="btn btn--danger" id="reject-confirm">Rechazar solicitud</button></div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+  <script src="js/proveedor.js"></script>
+</body>
+</html>

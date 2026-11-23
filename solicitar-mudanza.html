@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Solicitar mudanza – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="cliente" data-nav="solicitar" data-page="c-solicitar">
+  <div class="app">
+    <main class="main" data-back="dashboard-cliente.html" data-title="Solicitar mudanza">
+      <div class="container container--narrow">
+
+        <header class="page-head">
+          <div>
+            <h1>Solicitar mudanza</h1>
+            <p class="page-head__sub">Completa los datos para cotizar tu servicio.</p>
+          </div>
+        </header>
+
+        <div class="form-steps" aria-hidden="true">
+          <div class="step is-current"><div class="step__dot">1</div><span class="step__label">Ubicaciones</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step__dot">2</div><span class="step__label">Fecha y hora</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step__dot">3</div><span class="step__label">Carga y vehículo</span></div>
+        </div>
+
+        <form id="request-form" class="card" novalidate>
+          <!-- Paso 1 -->
+          <fieldset data-step="1" style="border:0;padding:0;margin:0">
+            <legend class="mb-16" style="font-size:16px;font-weight:500">¿Dónde es tu mudanza?</legend>
+            <div class="field">
+              <label for="origen">Dirección de origen</label>
+              <div class="input-wrap"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><input class="input" id="origen" name="origen" autocomplete="street-address" placeholder="Calle 72 #10-45, Bogotá" required></div>
+              <span class="field__error">Escribe la dirección completa de origen.</span>
+            </div>
+            <div class="row" style="margin:14px 0">
+              <hr class="card__divider" style="flex:1;margin:0">
+              <button type="button" class="icon-btn" id="swap" aria-label="Intercambiar origen y destino" style="width:32px;height:32px"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M7 20l-4-4M7 20l4-4M17 20V4M17 4l-4 4M17 4l4 4"/></svg></button>
+              <hr class="card__divider" style="flex:1;margin:0">
+            </div>
+            <div class="field" style="margin-top:0">
+              <label for="destino">Dirección de destino</label>
+              <div class="input-wrap"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg><input class="input" id="destino" name="destino" autocomplete="street-address" placeholder="Av. El Dorado #68C-61, Bogotá" required></div>
+              <span class="field__error">Escribe una dirección de destino distinta al origen.</span>
+            </div>
+            <button type="button" class="btn btn--primary btn--block btn--lg mt-24" data-next>Continuar <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </fieldset>
+
+          <!-- Paso 2 -->
+          <fieldset data-step="2" class="hidden" style="border:0;padding:0;margin:0">
+            <legend class="mb-16" style="font-size:16px;font-weight:500">¿Cuándo la necesitas?</legend>
+            <div class="form-grid">
+              <div class="field">
+                <label for="fecha">Fecha</label>
+                <div class="input-wrap"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><input class="input" type="date" id="fecha" name="fecha" required></div>
+                <span class="field__error">Elige una fecha desde hoy en adelante.</span>
+              </div>
+              <div class="field">
+                <label for="hora">Hora aproximada</label>
+                <div class="input-wrap"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <select class="select input" id="hora" name="hora" required style="padding-left:40px">
+                    <option value="">Selecciona...</option>
+                    <option value="07:00">07:00 AM</option><option value="08:00" selected>08:00 AM</option><option value="09:00">09:00 AM</option>
+                    <option value="10:00">10:00 AM</option><option value="11:00">11:00 AM</option><option value="12:00">12:00 PM</option>
+                    <option value="13:00">01:00 PM</option><option value="14:00">02:00 PM</option><option value="15:00">03:00 PM</option>
+                    <option value="16:00">04:00 PM</option><option value="17:00">05:00 PM</option>
+                  </select>
+                </div>
+                <span class="field__error">Elige una hora.</span>
+              </div>
+            </div>
+            <div class="notice notice--blue mt-16"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Los proveedores confirman la hora exacta al aceptar tu solicitud.</span></div>
+            <div class="btn-row mt-24">
+              <button type="button" class="btn btn--outline btn--lg" data-prev>Atrás</button>
+              <button type="button" class="btn btn--primary btn--lg" data-next>Continuar <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            </div>
+          </fieldset>
+
+          <!-- Paso 3 -->
+          <fieldset data-step="3" class="hidden" style="border:0;padding:0;margin:0">
+            <legend class="mb-16" style="font-size:16px;font-weight:500">¿Qué vas a mover?</legend>
+            <p class="field__label">Volumen de carga</p>
+            <div class="option-grid mt-8" role="radiogroup" aria-label="Volumen de carga">
+              <label class="option"><input type="radio" name="volumen" value="pequeno"><span class="option__emoji">📦</span>Pequeño<span class="option__sub">1 habitación</span></label>
+              <label class="option"><input type="radio" name="volumen" value="mediano" checked><span class="option__emoji">🛋️</span>Mediano<span class="option__sub">2–3 habitaciones</span></label>
+              <label class="option"><input type="radio" name="volumen" value="grande"><span class="option__emoji">🏠</span>Grande<span class="option__sub">Casa completa</span></label>
+            </div>
+            <p class="field__label mt-24">Tipo de vehículo</p>
+            <div class="option-grid option-grid--4 mt-8" role="radiogroup" aria-label="Tipo de vehículo">
+              <label class="option"><input type="radio" name="vehiculo" value="van"><span class="option__emoji">🚐</span>Van</label>
+              <label class="option"><input type="radio" name="vehiculo" value="camion-pequeno"><span class="option__emoji">🛻</span>Camión pequeño</label>
+              <label class="option"><input type="radio" name="vehiculo" value="camion-mediano" checked><span class="option__emoji">🚚</span>Camión mediano</label>
+              <label class="option"><input type="radio" name="vehiculo" value="camion-grande"><span class="option__emoji">🚛</span>Camión grande</label>
+            </div>
+            <div class="row row--between mt-24">
+              <div><p class="field__label">Ayudantes de carga</p><p class="field__hint">$18.000 por ayudante</p></div>
+              <div class="stepper">
+                <button type="button" id="helpers-minus" aria-label="Quitar ayudante">−</button>
+                <output id="helpers-out" aria-live="polite">2</output>
+                <button type="button" id="helpers-plus" aria-label="Agregar ayudante">+</button>
+              </div>
+              <input type="hidden" name="ayudantes" value="2">
+            </div>
+            <div class="field mt-24">
+              <label for="descripcion">Descripción adicional <span class="subtle">(opcional)</span></label>
+              <textarea class="textarea" id="descripcion" name="descripcion" maxlength="300" placeholder="Ej: nevera, lavadora, piano, objetos frágiles, piso sin ascensor..."></textarea>
+            </div>
+            <div class="btn-row mt-24">
+              <button type="button" class="btn btn--outline btn--lg" data-prev>Atrás</button>
+              <button type="submit" class="btn btn--primary btn--lg">Ver cotización <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/cliente.js"></script>
+</body>
+</html>

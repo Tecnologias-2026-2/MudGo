@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Perfil – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="cliente" data-nav="perfil" data-page="c-perfil">
+  <div class="app">
+    <main class="main">
+      <div class="container container--mid">
+
+        <section class="card text-center" style="padding:28px 20px">
+          <span class="avatar avatar--xl" id="pf-avatar" style="margin:0 auto">AG</span>
+          <h1 class="mt-16" style="font-size:20px" id="pf-name">Ana García</h1>
+          <p class="small muted" id="pf-mail">ana.garcia@correo.com</p>
+          <p class="small subtle" id="pf-phone">+57 300 485 9011</p>
+          <div class="mini-stats" style="max-width:420px;margin-inline:auto">
+            <div class="mini-stat"><strong>4</strong><span>Mudanzas</span></div>
+            <div class="mini-stat"><strong>4.9★</strong><span>Mi rating</span></div>
+            <div class="mini-stat"><strong>2 años</strong><span>En MudGo</span></div>
+          </div>
+        </section>
+
+        <section class="card card--flush">
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">👤</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Datos personales</span><span class="list-row__sub">Nombre, correo y teléfono</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <form id="form-datos" class="form-grid" novalidate>
+                <div class="field span-2"><label for="pf-nombre">Nombre completo</label><input class="input" id="pf-nombre" name="nombre" autocomplete="name"></div>
+                <div class="field"><label for="pf-correo">Correo electrónico</label><input class="input" type="email" id="pf-correo" name="correo" autocomplete="email"></div>
+                <div class="field"><label for="pf-tel">Teléfono</label><input class="input" type="tel" id="pf-tel" name="telefono" autocomplete="tel"></div>
+                <div class="field span-2"><label for="pf-ciudad">Ciudad</label>
+                  <select class="select" id="pf-ciudad" name="ciudad"><option>Bogotá</option><option>Medellín</option><option>Cali</option><option>Barranquilla</option><option>Cartagena</option><option>Bucaramanga</option></select></div>
+                <div class="span-2"><button class="btn btn--primary" type="submit">Guardar cambios</button></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">📍</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Mis direcciones</span><span class="list-row__sub" id="addr-count">2 direcciones guardadas</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <div class="reason-list" id="addr-list"></div>
+              <form id="form-addr" class="form-grid mt-16" novalidate>
+                <div class="field"><label for="ad-alias">Nombre</label><input class="input" id="ad-alias" name="alias" placeholder="Ej: Casa de mis papás"></div>
+                <div class="field"><label for="ad-dir">Dirección</label><input class="input" id="ad-dir" name="dir" placeholder="Cra 7 #72-12, Bogotá"></div>
+                <div class="span-2"><button class="btn btn--soft" type="submit">+ Agregar dirección</button></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">💳</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Métodos de pago</span><span class="list-row__sub">Tarjeta ····4521</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <div class="reason"><span class="reason__icon">💳</span><div style="flex:1"><strong>Visa ···· 4521</strong><span>Vence 12/27</span></div><span class="badge badge--blue">Predeterminada</span></div>
+              <button class="btn btn--soft mt-16" id="add-card" type="button">+ Agregar método de pago</button>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">🔔</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Notificaciones</span><span class="list-row__sub" id="notif-state">Activas</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <div class="stack">
+                <label class="switch row--between w-full" style="display:flex;justify-content:space-between"><span>Estado de mis solicitudes</span><input type="checkbox" data-pref="estado"><span class="switch__track"></span></label>
+                <label class="switch row--between w-full" style="display:flex;justify-content:space-between"><span>Resumen por correo</span><input type="checkbox" data-pref="correo"><span class="switch__track"></span></label>
+                <label class="switch row--between w-full" style="display:flex;justify-content:space-between"><span>Promociones y descuentos</span><input type="checkbox" data-pref="promos"><span class="switch__track"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">🔒</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Seguridad</span><span class="list-row__sub">Contraseña y acceso</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <form id="form-pass" class="form-grid" novalidate>
+                <div class="field span-2"><label for="ps-actual">Contraseña actual</label><input class="input" type="password" id="ps-actual" name="actual" autocomplete="current-password"></div>
+                <div class="field"><label for="ps-nueva">Nueva contraseña</label><input class="input" type="password" id="ps-nueva" name="nueva" autocomplete="new-password" minlength="8"></div>
+                <div class="field"><label for="ps-conf">Confirmar contraseña</label><input class="input" type="password" id="ps-conf" name="confirmar" autocomplete="new-password"></div>
+                <div class="span-2"><button class="btn btn--primary" type="submit">Actualizar contraseña</button></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <button class="list-row" aria-expanded="false">
+              <span class="menu-item__icon">❓</span>
+              <span class="list-row__main"><span class="list-row__title" style="display:block">Ayuda y soporte</span><span class="list-row__sub">Centro de ayuda</span></span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="menu-panel hidden">
+              <div class="reason-list">
+                <a class="reason" href="index.html#faq"><span class="reason__icon">❓</span><div><strong>Preguntas frecuentes</strong><span>Reservas, pagos, seguridad y cobertura.</span></div></a>
+                <a class="reason" href="mailto:soporte@mudgo.co"><span class="reason__icon">✉️</span><div><strong>soporte@mudgo.co</strong><span>Respondemos en menos de 24 horas.</span></div></a>
+                <a class="reason" href="tel:+576015550000"><span class="reason__icon">📞</span><div><strong>(601) 555 0000</strong><span>Lunes a sábado, 7:00 a.m. – 7:00 p.m.</span></div></a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <a class="btn btn--danger-soft btn--block mt-16" href="login.html"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Cerrar sesión</a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/cliente.js"></script>
+</body>
+</html>

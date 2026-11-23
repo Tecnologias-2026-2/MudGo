@@ -1,0 +1,22 @@
+# Local configuration and secrets
+.env
+*.log
+/backend/config/config.php
+/backend/config/config.local.php
+
+# Git metadata accidentally extracted into project root
+/HEAD
+/config
+/description
+/index
+/packed-refs
+
+# Archives and backups
+/mudGO.zip
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+/probar-conexion.php

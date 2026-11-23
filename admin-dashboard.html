@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Panel administrativo – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="admin" data-nav="dashboard" data-page="a-dashboard">
+  <div class="app">
+    <main class="main">
+      <div class="container container--wide">
+
+        <header class="page-head">
+          <div><h1>Panel administrativo</h1><p class="page-head__sub" data-today>Domingo, 9 de agosto 2026</p></div>
+        </header>
+        <section class="stat-grid stat-grid--5">
+          <div class="stat"><div class="stat__top"><span class="stat__icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="stat__trend">↑ +12%</span></div><div class="stat__value">3.842</div><div class="stat__label">Usuarios registrados</div></div>
+          <div class="stat"><div class="stat__top"><span class="stat__icon stat__icon--orange"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l4 4v4h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></span><span class="stat__trend">↑ +8%</span></div><div class="stat__value">487</div><div class="stat__label">Proveedores</div></div>
+          <div class="stat"><div class="stat__top"><span class="stat__icon stat__icon--green"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span></div><div class="stat__value">12.043</div><div class="stat__label">Servicios solicitados</div></div>
+          <div class="stat"><div class="stat__top"><span class="stat__icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span></div><div class="stat__value">38</div><div class="stat__label">Servicios activos</div></div>
+          <div class="stat"><div class="stat__top"><span class="stat__icon stat__icon--purple"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span><span class="stat__trend">↑ +5%</span></div><div class="stat__value">11.680</div><div class="stat__label">Finalizados</div></div>
+        </section>
+        <div class="grid-3 mt-24">
+          <section class="card">
+            <div class="card__head"><h3>Servicios por semana</h3><span class="small subtle">Últimos 7 días</span></div>
+            <div class="bars" id="bars" role="img" aria-label="Servicios por día de la semana"></div>
+          </section>
+          <section class="card">
+            <div class="card__head"><h3>Distribución estados</h3></div>
+            <div class="dist-row"><div class="dist-row__head"><span>Finalizados</span><span>97%</span></div><div class="progress"><div class="progress__bar" data-w="97"></div></div></div>
+            <div class="dist-row"><div class="dist-row__head"><span>Activos</span><span>2%</span></div><div class="progress progress--orange"><div class="progress__bar" data-w="2"></div></div></div>
+            <div class="dist-row"><div class="dist-row__head"><span>Cancelados</span><span>1%</span></div><div class="progress progress--red"><div class="progress__bar" data-w="1"></div></div></div>
+          </section>
+        </div>
+        <section class="card card--flush mt-24">
+          <div class="row row--between" style="padding:16px 20px"><h3 style="font-size:14px">Servicios recientes</h3><a class="btn btn--link" href="admin-servicios.html">Ver todos →</a></div>
+          <div class="table-wrap">
+            <table class="table table--stack">
+              <thead><tr><th>ID</th><th>Cliente</th><th>Proveedor</th><th>Fecha</th><th>Estado</th><th>Costo</th></tr></thead>
+              <tbody id="recent-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="svc-modal" role="dialog" aria-modal="true" aria-labelledby="svc-title" aria-hidden="true">
+    <div class="modal__box">
+      <div class="modal__head"><h3 id="svc-title">Servicio</h3><button class="modal__close" data-close aria-label="Cerrar"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="modal__body" id="svc-body"></div>
+      <div class="modal__foot"><button class="btn btn--danger-soft hidden" id="svc-cancel">Cancelar servicio</button><button class="btn btn--outline" data-close>Cerrar</button></div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

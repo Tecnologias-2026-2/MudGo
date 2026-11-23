@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Pago – MudGo</title>
+  <meta name="description" content="MudGo: plataforma de mudanzas y transporte de carga en Colombia.">
+  <meta name="theme-color" content="#0069FF">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-role="cliente" data-nav="solicitar" data-page="c-pago">
+  <div class="app">
+    <main class="main" data-back="estado-solicitud.html" data-title="Pago">
+      <div class="container container--narrow">
+
+        <div id="pay-flow"></div>
+        <div id="pay-blocked" class="hidden"></div>
+
+        <!-- C11 · Formulario de pago -->
+        <div id="pay-form-view">
+          <header class="page-head" style="margin-bottom:16px">
+            <div><h1>Realizar pago</h1><p class="page-head__sub">Tus datos están seguros y encriptados.</p></div>
+          </header>
+          <div class="notice notice--green"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Pago seguro · Cifrado SSL · Tu dinero protegido hasta la entrega</span></div>
+
+          <section class="card mt-16">
+            <h3 style="font-size:14px">Resumen del pago</h3>
+            <div id="pay-summary" class="mt-8"></div>
+          </section>
+
+          <form id="pay-form" class="card" novalidate>
+            <h3 style="font-size:14px" class="mb-16">Método de pago</h3>
+            <div class="option-grid" id="methods" role="radiogroup" aria-label="Método de pago">
+              <label class="option"><input type="radio" name="metodo" value="tarjeta" checked><span class="option__emoji">💳</span>Tarjeta</label>
+              <label class="option"><input type="radio" name="metodo" value="nequi"><span class="option__emoji">📱</span>Nequi</label>
+              <label class="option"><input type="radio" name="metodo" value="daviplata"><span class="option__emoji">🔴</span>Daviplata</label>
+            </div>
+
+            <div id="card-fields" class="mt-24">
+              <div class="field">
+                <label for="card-number">Número de tarjeta</label>
+                <div class="input-wrap"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><input class="input" id="card-number" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456"></div>
+                <span class="field__error">El número debe tener 16 dígitos.</span>
+              </div>
+              <div class="form-grid mt-16">
+                <div class="field"><label for="card-exp">Vencimiento</label><input class="input" id="card-exp" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA"><span class="field__error">Fecha inválida o vencida.</span></div>
+                <div class="field"><label for="card-cvv">CVV</label><input class="input" id="card-cvv" inputmode="numeric" autocomplete="cc-csc" placeholder="123"><span class="field__error">3 o 4 dígitos.</span></div>
+              </div>
+              <div class="field mt-16"><label for="pay-name">Nombre en la tarjeta</label><input class="input" id="pay-name" autocomplete="cc-name" placeholder="ANA GARCIA" style="text-transform:uppercase"><span class="field__error">Escribe el nombre como aparece en la tarjeta.</span></div>
+            </div>
+
+            <div id="wallet-fields" class="mt-24 hidden">
+              <div class="field">
+                <label for="wallet-phone" id="wallet-label">Número de celular Nequi</label>
+                <div class="input-wrap"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><input class="input" id="wallet-phone" inputmode="numeric" autocomplete="tel-national" placeholder="300 000 0000"></div>
+                <span class="field__error">Escribe un celular colombiano de 10 dígitos (empieza por 3).</span>
+                <span class="field__hint">Recibirás una notificación en la app para aprobar el pago.</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--lg btn--block mt-24" id="pay-btn">Pagar</button>
+
+            <div class="demo-bar">
+              <div class="demo-bar__title">Pasarela simulada</div>
+              <label class="switch"><input type="checkbox" id="sim-fail"><span class="switch__track"></span>Simular pago rechazado</label>
+              <p class="mt-8">También falla cualquier tarjeta terminada en 0002.</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- C13 · Pago fallido -->
+        <div id="pay-fail-view" class="hidden">
+          <section class="card status-hero">
+            <div class="status-icon status-icon--red status-icon--lg"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg></div>
+            <h2>Pago no procesado</h2>
+            <p>No pudimos procesar tu pago. El proveedor sigue asignado a tu solicitud por ahora.</p>
+          </section>
+          <section class="card">
+            <h3 class="mb-16">Posibles causas</h3>
+            <div class="reason-list">
+              <div class="reason"><span class="reason__icon">💳</span><span>Fondos insuficientes en la tarjeta.</span></div>
+              <div class="reason"><span class="reason__icon">🔒</span><span>El banco rechazó la transacción por seguridad.</span></div>
+              <div class="reason"><span class="reason__icon">📡</span><span>Error de conexión durante el proceso.</span></div>
+            </div>
+          </section>
+          <div class="notice notice--orange mt-16"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span><strong>Tu proveedor sigue reservado.</strong>Carlos Ruiz está esperando la confirmación del pago para asegurar la fecha.</span></div>
+          <div class="btn-stack">
+            <button class="btn btn--primary btn--lg" id="retry-btn">Intentar nuevamente <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            <button class="btn btn--outline" id="change-method-btn">Cambiar método de pago</button>
+            <a class="btn btn--ghost" href="dashboard-cliente.html">Cancelar por ahora</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- C12 · Pago exitoso -->
+  <div class="modal" id="success-modal" role="dialog" aria-modal="true" aria-labelledby="success-title" aria-hidden="true">
+    <div class="modal__box splash">
+      <div class="status-icon status-icon--green status-icon--lg"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h2 id="success-title">¡Pago exitoso!</h2>
+      <p>Tu pago de <strong id="success-amount">$198.450</strong> fue procesado correctamente.</p>
+      <div class="splash__redirect">Redirigiendo a la confirmación del servicio...</div>
+      <div class="progress progress--green"><div class="progress__bar" id="success-progress" style="transition:width 2.4s linear"></div></div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+  <script src="js/cliente.js"></script>
+</body>
+</html>
