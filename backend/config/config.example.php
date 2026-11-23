@@ -14,6 +14,6 @@ return [
     'app' => [
         'environment' => 'development',
         'session_name' => 'MUDGOSESSID',
-        'allowed_origin' => '*',
+        'allowed_origin' => '*', // '*' desactiva CORS explícito; la app debe servirse desde el mismo origen.
     ],
 ];

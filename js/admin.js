@@ -7,7 +7,7 @@
   const { $, $$, esc, icon, money, dateMed, initials, stars, store, DATA, toast, openModal, closeModal,
     initTabs, page, badge } = window.MG;
 
-  function load(key, fallback) { return store.get(key, fallback.map(x => Object.assign({}, x))); }
+  function load(key, fallback) { return Array.isArray(fallback) ? fallback.map(x => Object.assign({}, x)) : []; }
   function since(d) { return 'Desde ' + dateMed(d).replace(/^0/, ''); }
   function searchable(input, onChange) {
     let t;
@@ -54,13 +54,9 @@
   /* AD01 · Dashboard                                                    */
   /* ================================================================== */
   page('a-dashboard', () => {
-    const week = [62, 71, 58, 80, 94, 120, 102];
-    const max = Math.max(...week);
-    $('#bars').innerHTML = ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((d, i) =>
-      '<div class="bars__col"><div class="bars__bar' + (week[i] === max ? ' is-max' : '') + '" style="height:0" data-h="' + Math.round(week[i] / max * 100) + '"><span>' + week[i] + '</span></div><span class="bars__label">' + d + '</span></div>'
-    ).join('');
-    setTimeout(() => $$('#bars .bars__bar').forEach(b => { b.style.height = b.dataset.h + '%'; }), 80);
-    setTimeout(() => $$('.dist-row .progress__bar').forEach(b => { b.style.width = b.dataset.w + '%'; }), 80);
+    $('#bars').innerHTML = '<p class="small muted">Sin datos históricos disponibles para esta gráfica.</p>';
+    $$('.dist-row__head span:last-child').forEach(x => x.textContent = '—');
+    $$('.dist-row .progress__bar').forEach(x => x.style.width = '0%');
 
     const svcs = load('adminServicios', DATA.serviciosAdmin);
     const body = $('#recent-body');

@@ -9,8 +9,8 @@ final class RequestController
         if ($user['rol'] === 'cliente') {
             $sql = 'SELECT s.*, p.nombre AS proveedor_nombre FROM solicitudes s LEFT JOIN usuarios p ON p.id=s.proveedor_id WHERE s.cliente_id=? ORDER BY s.created_at DESC'; $args=[$user['id']];
         } elseif ($user['rol'] === 'proveedor') {
-            $sql = "SELECT s.*, c.nombre AS cliente_nombre FROM solicitudes s JOIN usuarios c ON c.id=s.cliente_id WHERE s.proveedor_id=? OR (s.proveedor_id IS NULL AND s.estado IN ('esperando_proveedor','buscando_proveedor') AND NOT EXISTS (SELECT 1 FROM rechazos_solicitud r WHERE r.solicitud_id=s.id AND r.proveedor_id=?)) ORDER BY s.created_at DESC";
-            $args=[$user['id'],$user['id']];
+            $sql = "SELECT s.*, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono FROM solicitudes s JOIN usuarios c ON c.id=s.cliente_id WHERE s.proveedor_id=? OR (s.proveedor_id IS NULL AND s.estado IN ('esperando_proveedor','buscando_proveedor') AND EXISTS (SELECT 1 FROM proveedores av WHERE av.usuario_id=? AND av.disponible=1) AND NOT EXISTS (SELECT 1 FROM rechazos_solicitud r WHERE r.solicitud_id=s.id AND r.proveedor_id=?)) ORDER BY s.created_at DESC";
+            $args=[$user['id'],$user['id'],$user['id']];
         } else { $sql='SELECT s.*, c.nombre AS cliente_nombre, p.nombre AS proveedor_nombre FROM solicitudes s JOIN usuarios c ON c.id=s.cliente_id LEFT JOIN usuarios p ON p.id=s.proveedor_id ORDER BY s.created_at DESC'; $args=[]; }
         $stmt=$pdo->prepare($sql); $stmt->execute($args); Response::success($stmt->fetchAll());
     }
@@ -19,11 +19,11 @@ final class RequestController
         $user=Auth::requireRole(['cliente']); $d=Request::body();
         Request::requireFields($d,['origen','destino','fecha_servicio','hora_servicio','tipo_carga','tipo_vehiculo']);
         if (strtotime((string)$d['fecha_servicio']) === false || $d['fecha_servicio'] < date('Y-m-d')) Response::error('La fecha del servicio no es válida o está en el pasado.',422);
-        if (mb_strlen(trim((string)$d['origen'])) > 255 || mb_strlen(trim((string)$d['destino'])) > 255) Response::error('Las direcciones no pueden superar 255 caracteres.',422);
+        if (strlen(trim((string)$d['origen'])) > 255 || strlen(trim((string)$d['destino'])) > 255) Response::error('Las direcciones no pueden superar 255 caracteres.',422);
         $distance=max(1,(float)($d['distancia_km']??1)); $volume=(string)$d['tipo_carga'];
         $volumeRates=['pequeno'=>35000,'mediano'=>60000,'grande'=>95000];
         $vehicleRates=['van'=>30000,'camion_pequeno'=>38000,'camion_mediano'=>45000,'camion_grande'=>65000];
-        $vehicle=(string)$d['tipo_vehiculo']; $helpers=max(0,(int)($d['ayudantes']??0));
+        $vehicle=str_replace('-','_', (string)$d['tipo_vehiculo']); $helpers=max(0,(int)($d['ayudantes']??0));
         $subtotal=(int)round($distance*3870+($volumeRates[$volume]??35000)+($vehicleRates[$vehicle]??30000)+$helpers*18000);
         $total=(int)round($subtotal*1.05);
         $stmt=Database::connection()->prepare('INSERT INTO solicitudes (cliente_id, origen, destino, fecha_servicio, hora_servicio, tipo_carga, tipo_vehiculo, ayudantes, distancia_km, observaciones, subtotal, total, estado) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
@@ -33,7 +33,16 @@ final class RequestController
     }
     public static function show(int $id): never
     {
-        $u=Auth::requireUser(); $st=Database::connection()->prepare('SELECT * FROM solicitudes WHERE id=?'); $st->execute([$id]); $s=$st->fetch();
+        $u=Auth::requireUser();
+        $sql='SELECT s.*, c.nombre AS cliente_nombre, c.telefono AS cliente_telefono, '
+            .'p.nombre AS proveedor_nombre, p.telefono AS proveedor_telefono, '
+            .'pr.calificacion_promedio AS proveedor_calificacion, pr.total_calificaciones AS proveedor_total_calificaciones, '
+            .'v.modelo AS vehiculo_modelo, v.capacidad AS vehiculo_capacidad '
+            .'FROM solicitudes s JOIN usuarios c ON c.id=s.cliente_id '
+            .'LEFT JOIN usuarios p ON p.id=s.proveedor_id '
+            .'LEFT JOIN proveedores pr ON pr.usuario_id=p.id '
+            .'LEFT JOIN vehiculos v ON v.id=s.vehiculo_id WHERE s.id=?';
+        $st=Database::connection()->prepare($sql); $st->execute([$id]); $s=$st->fetch();
         if(!$s) Response::error('Solicitud no encontrada.',404);
         if($u['rol']!=='admin' && (int)$s['cliente_id']!==(int)$u['id'] && (int)($s['proveedor_id']??0)!==(int)$u['id']) Response::error('No tienes acceso a esta solicitud.',403);
         Response::success($s);
@@ -54,7 +63,11 @@ final class RequestController
             $p=$pdo->prepare('SELECT id, disponible FROM proveedores WHERE usuario_id=? FOR UPDATE'); $p->execute([$u['id']]); $provider=$p->fetch();
             if(!$provider || !(int)$provider['disponible']) Response::error('El proveedor no está disponible.',403);
             if($decision==='aceptar') {
-                $up=$pdo->prepare("UPDATE solicitudes SET proveedor_id=?, estado='aceptada' WHERE id=?"); $up->execute([$u['id'],$id]);
+                $v=$pdo->prepare('SELECT id FROM vehiculos WHERE proveedor_id=? AND disponible=1 AND tipo=? ORDER BY id LIMIT 1 FOR UPDATE'); $v->execute([$u['id'],$s['tipo_vehiculo']]); $vehicleId=$v->fetchColumn();
+                if(!$vehicleId){$v=$pdo->prepare('SELECT id FROM vehiculos WHERE proveedor_id=? AND disponible=1 ORDER BY id LIMIT 1 FOR UPDATE');$v->execute([$u['id']]);$vehicleId=$v->fetchColumn();}
+                $up=$pdo->prepare("UPDATE solicitudes SET proveedor_id=?, vehiculo_id=?, estado='aceptada' WHERE id=?"); $up->execute([$u['id'],$vehicleId?:null,$id]);
+                if($vehicleId)$pdo->prepare('UPDATE vehiculos SET disponible=0 WHERE id=?')->execute([$vehicleId]);
+                $pdo->prepare('UPDATE proveedores SET disponible=0 WHERE usuario_id=?')->execute([$u['id']]);
             } else {
                 $pdo->prepare("INSERT INTO rechazos_solicitud (solicitud_id, proveedor_id) VALUES (?,?) ON DUPLICATE KEY UPDATE created_at=CURRENT_TIMESTAMP")->execute([$id,$u['id']]);
                 $up=$pdo->prepare("UPDATE solicitudes SET estado='buscando_proveedor' WHERE id=?"); $up->execute([$id]);
@@ -69,11 +82,12 @@ final class RequestController
         $pdo=Database::connection();
         $current=$pdo->prepare('SELECT estado FROM solicitudes WHERE id=?'); $current->execute([$id]); $currentState=$current->fetchColumn();
         if(!$currentState) Response::error('Solicitud no encontrada.',404);
-        $transitions=['pagada'=>['en_camino','cancelada'],'en_camino'=>['en_curso','cancelada'],'en_curso'=>['finalizada']];
+        $transitions=['pagada'=>['en_camino','en_curso','cancelada'],'en_camino'=>['en_curso','cancelada'],'en_curso'=>['finalizada']];
         if($u['rol']!=='admin' && !in_array($d['estado'],$transitions[$currentState]??[],true)) Response::error('Transición de estado no permitida.',409);
         $sql=$u['rol']==='admin'?'UPDATE solicitudes SET estado=? WHERE id=?':'UPDATE solicitudes SET estado=? WHERE id=? AND proveedor_id=?';
         $st=$pdo->prepare($sql); $args=[$d['estado'],$id]; if($u['rol']!=='admin')$args[]=$u['id']; $st->execute($args);
         if(!$st->rowCount()) Response::error('No se pudo actualizar la solicitud.',404);
+        if($d['estado']==='finalizada'){$q=$pdo->prepare('SELECT vehiculo_id FROM solicitudes WHERE id=?');$q->execute([$id]);$vid=$q->fetchColumn();if($vid)$pdo->prepare('UPDATE vehiculos SET disponible=1 WHERE id=?')->execute([$vid]);$q=$pdo->prepare('SELECT proveedor_id FROM solicitudes WHERE id=?');$q->execute([$id]);$pid=$q->fetchColumn();$q=$pdo->prepare("SELECT COUNT(*) FROM solicitudes WHERE proveedor_id=? AND id<>? AND estado IN ('aceptada','pagada','en_camino','en_curso')");$q->execute([$pid,$id]);if((int)$q->fetchColumn()===0)$pdo->prepare('UPDATE proveedores SET disponible=1 WHERE usuario_id=?')->execute([$pid]);}
         Response::success(['id'=>$id,'estado'=>$d['estado']]);
     }
 }

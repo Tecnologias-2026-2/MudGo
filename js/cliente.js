@@ -38,72 +38,56 @@
   /* ================================================================== */
   /* C01 · Dashboard del cliente                                         */
   /* ================================================================== */
-  page('c-dashboard', () => {
-    const r = request.get();
-    const hasReq = !!r;
+  page('c-dashboard', async () => {
+    const greeting = $('#client-greeting');
+    const currentUser = window.MG_USER || {};
+    if (greeting) greeting.textContent = 'Hola, ' + (currentUser.nombre || DATA.cliente.nombre || 'cliente') + ' 👋';
 
-    // Solicitud pendiente
-    const pendingStates = {
-      esperando: ['Esperando proveedor', 'orange', 'Notificando a 12+ proveedores...'],
-      buscando: ['Buscando proveedor', 'orange', 'Buscando otro proveedor disponible...'],
-      rechazada: ['Rechazada por proveedor', 'red', 'Buscaremos otro proveedor automáticamente.'],
-      sin_proveedor: ['Sin proveedor disponible', 'red', 'Modifica la fecha u hora para aumentar la disponibilidad.'],
+    const pending = $('#pending'), active = $('#active'), recent = $('#recent');
+    const statusLabels = {
+      cotizada: ['Cotización pendiente', 'orange', 'Tu cotización está lista para enviar.'],
+      esperando_proveedor: ['Esperando proveedor', 'orange', 'Los proveedores están revisando tu solicitud.'],
+      buscando_proveedor: ['Buscando proveedor', 'orange', 'Buscando un proveedor disponible.'],
+      sin_proveedor: ['Sin proveedor disponible', 'red', 'Intenta cambiar la fecha u hora.'],
       aceptada: ['Proveedor aceptado', 'green', 'Completa el pago para confirmar el servicio.'],
-      pago_fallido: ['Pago fallido', 'red', 'Tu proveedor sigue reservado. Intenta pagar de nuevo.']
+      pagada: ['Pago confirmado', 'blue', 'Tu servicio está listo para iniciar.']
     };
-    const pend = $('#pending');
-    const pr = hasReq ? r : Object.assign(MG.demoRequest(), { estado: 'esperando' });
-    const pst = hasReq ? pendingStates[r.estado] : pendingStates.esperando;
-    if (pst) {
-      const link = ['aceptada', 'esperando', 'buscando', 'rechazada', 'sin_proveedor'].includes(pr.estado) || !hasReq ? 'estado-solicitud.html' : 'pago.html';
-      pend.innerHTML =
-        '<div class="card__head"><h3>Solicitud pendiente</h3>' + badge(pst[0], pst[1], true) + '</div>' +
-        '<p class="small muted">' + esc(MG.request.shortRoute(pr)) + ' · ' + dateShort(pr.fecha) + ' · ' + esc(pr.hora) + '</p>' +
-        '<div class="row row--between mt-12"><span class="small subtle">' + esc(pst[2]) + '</span>' +
-        '<a class="btn btn--link" href="' + link + '">' + (pr.estado === 'aceptada' ? 'Ir al pago →' : 'Ver estado →') + '</a></div>';
-      pend.classList.remove('hidden');
-      if (pr.estado === 'borrador') pend.classList.add('hidden');
-    } else if (hasReq && r.estado === 'borrador') {
-      pend.innerHTML = '<div class="card__head"><h3>Cotización sin enviar</h3>' + badge('Borrador', 'gray') + '</div>' +
-        '<p class="small muted">' + esc(MG.request.shortRoute(r)) + ' · ' + money(r.precio.total) + ' estimado</p>' +
-        '<div class="row row--between mt-12"><span class="small subtle">Aún no la has enviado a los proveedores.</span><a class="btn btn--link" href="cotizacion.html">Retomar →</a></div>';
-      pend.classList.remove('hidden');
-    } else {
-      pend.classList.add('hidden');
+    const statusText = s => ({cotizada:'Cotizada',esperando_proveedor:'Esperando proveedor',buscando_proveedor:'Buscando proveedor',sin_proveedor:'Sin proveedor',aceptada:'Aceptada',pagada:'Pagada',en_camino:'En camino',en_curso:'En curso',finalizada:'Finalizada',cancelada:'Cancelada'}[s] || s);
+    try {
+      const rows = await MudGoAPI.requests();
+      const newest = [...rows].sort((a,b) => (b.id||0)-(a.id||0));
+      // El resumen representa la solicitud más reciente. No rescata solicitudes
+      // antiguas abiertas si el último flujo ya terminó o fue cancelado.
+      const latest = newest[0] || null;
+      const current = latest && ['pagada','en_camino','en_curso'].includes(latest.estado) ? latest : null;
+      const pend = latest && ['cotizada','esperando_proveedor','buscando_proveedor','sin_proveedor','aceptada'].includes(latest.estado) ? latest : null;
+      if (pend) {
+        const label = statusLabels[pend.estado] || ['Solicitud pendiente','orange','Consulta el estado de tu solicitud.'];
+        pending.innerHTML = '<div class="card__head"><h3>Solicitud pendiente</h3>' + badge(label[0],label[1],true) + '</div>' +
+          '<p class="small muted">' + esc(pend.origen) + ' → ' + esc(pend.destino) + ' · ' + dateShort(pend.fecha_servicio) + ' · ' + esc(pend.hora_servicio) + '</p>' +
+          '<div class="row row--between mt-12"><span class="small subtle">' + esc(label[2]) + '</span><a class="btn btn--link" href="estado-solicitud.html?id=' + encodeURIComponent(pend.id) + '">Ver estado →</a></div>';
+        pending.classList.remove('hidden');
+      } else { pending.classList.add('hidden'); pending.innerHTML=''; }
+      if (current) {
+        const provider = current.proveedor_nombre || 'Proveedor asignado';
+        const vehicle = current.vehiculo_modelo || current.tipo_vehiculo || 'Vehículo por confirmar';
+        active.innerHTML = '<div class="card__head"><h3>Servicio activo</h3>' + badge(statusText(current.estado),'blue',true) + '</div>' +
+          routeHTML({origen:current.origen,destino:current.destino}) + '<hr class="card__divider">' +
+          '<div class="row row--between"><div class="row"><span class="avatar avatar--sm">' + initials(provider) + '</span><div><div class="small">' + esc(provider) + '</div><div class="xs subtle">' + esc(vehicle) + '</div></div></div>' +
+          '<a class="btn btn--primary btn--sm" href="seguimiento.html?id=' + encodeURIComponent(current.id) + '">Ver seguimiento</a></div>';
+        active.classList.remove('hidden');
+      } else { active.classList.add('hidden'); active.innerHTML=''; }
+      recent.innerHTML = newest.length ? newest.slice(0,3).map(h => '<a class="list-row" href="historial-cliente.html?id=' + encodeURIComponent(h.id) + '">' +
+        '<div class="list-row__main"><div class="row" style="gap:8px"><span class="xs subtle">' + dateMed(h.fecha_servicio) + '</span>' + badge(statusText(h.estado)) + '</div>' +
+        '<div class="list-row__title mt-8">' + esc(h.origen) + '</div><div class="list-row__sub">→ ' + esc(h.destino) + '</div></div>' +
+        '<div class="list-row__end"><div class="strong">' + money(h.total || 0) + '</div></div></a>').join('') : '<div class="empty-state">Aún no tienes solicitudes registradas.</div>';
+    } catch (e) {
+      toast('No se pudo cargar el resumen: ' + e.message, 'error');
+      pending.classList.add('hidden'); active.classList.add('hidden');
+      recent.innerHTML = '<div class="empty-state">No fue posible cargar tu historial reciente.</div>';
     }
-
-    // Servicio activo
-    const act = $('#active');
-    const activeReq = !hasReq ? { origen: 'Calle 72 #10-45, Bogotá', destino: 'Av. El Dorado #68C-61, Bogotá', estado: 'en_curso', vehiculo: 'Toyota Dyna · ABC-123', prov: 'Carlos Ruiz' }
-      : (['pagada', 'en_curso'].includes(r.estado) ? { origen: r.origen, destino: r.destino, estado: r.estado, vehiculo: P.vehiculo + ' · ' + P.placa, prov: P.corto } : null);
-    if (activeReq) {
-      act.innerHTML =
-        '<div class="card__head"><h3>Servicio activo</h3>' + (activeReq.estado === 'pagada' ? badge('Confirmado', 'blue', true) : badge('En curso', 'blue', true)) + '</div>' +
-        routeHTML(activeReq) +
-        '<hr class="card__divider">' +
-        '<div class="row row--between"><div class="row"><span class="avatar avatar--sm">' + initials(activeReq.prov) + '</span>' +
-        '<div><div class="small">' + esc(activeReq.prov) + '</div><div class="xs subtle">' + esc(activeReq.vehiculo) + '</div></div></div>' +
-        '<a class="btn btn--primary btn--sm" href="' + (activeReq.estado === 'pagada' ? 'servicio-confirmado.html' : 'seguimiento.html') + '">' + (activeReq.estado === 'pagada' ? 'Ver detalle' : 'Ver en vivo') + '</a></div>';
-      act.classList.remove('hidden');
-    } else {
-      act.classList.add('hidden');
-    }
-
-    // Historial reciente
-    const hist = historyList().slice(0, 3);
-    $('#recent').innerHTML = hist.map(h =>
-      '<a class="list-row" href="historial-cliente.html?id=' + encodeURIComponent(h.id) + '">' +
-      '<div class="list-row__main"><div class="row" style="gap:8px"><span class="xs subtle">' + dateMed(h.fecha) + '</span>' + badge(h.estado) + '</div>' +
-      '<div class="list-row__title mt-8">' + esc(h.origen) + '</div><div class="list-row__sub">→ ' + esc(h.destino) + '</div></div>' +
-      '<div class="list-row__end"><div class="strong">' + money(h.costo) + '</div>' + (h.rating ? stars(h.rating) : '') + '</div></a>'
-    ).join('');
   });
 
-  /** Historial = servicios guardados por la demo + datos de ejemplo. */
-  function historyList() {
-    const extra = store.get('historialExtra', []);
-    return extra.concat(DATA.historialCliente);
-  }
 
   /* ================================================================== */
   /* C02 · Solicitar mudanza (3 pasos)                                   */
@@ -191,7 +175,7 @@
       const btn = form.querySelector('[type=submit]');
       setLoading(btn, true, 'Calculando cotización…');
       const r = {
-        id: editing ? prev.id : 'MG-' + String(43 + Math.floor(Math.random() * 50)).padStart(3, '0'),
+        id: editing ? prev.id : null,
         origen: form.elements.origen.value.trim(),
         destino: form.elements.destino.value.trim(),
         fecha: fecha.value,
@@ -205,8 +189,14 @@
       };
       r.distancia = estimateDistance(r.origen, r.destino);
       r.precio = calcQuote(r);
-      request.save(r);
-      go('cotizacion.html', 700);
+      const apiVehicle = String(r.vehiculo).replaceAll('-', '_');
+      const payload = { origen:r.origen, destino:r.destino, fecha_servicio:r.fecha, hora_servicio:r.hora, tipo_carga:r.volumen, tipo_vehiculo:apiVehicle, ayudantes:r.ayudantes, distancia_km:r.distancia, observaciones:r.descripcion };
+      if (window.MudGoAPI) {
+        window.MudGoAPI.createRequest(payload).then(created => {
+          r.id = created.id; r.apiId = created.id; r.estado = 'borrador'; r.precio = Object.assign({}, r.precio, { subtotal:Number(created.subtotal), total:Number(created.total), tarifa:Number(created.total)-Number(created.subtotal) });
+          request.save(r); go('cotizacion.html', 300);
+        }).catch(err => { toast(err.message || 'No se pudo guardar la solicitud.', 'error'); setLoading(btn, false); });
+      } else { request.save(r); go('cotizacion.html', 700); }
     });
 
     show(1);
@@ -217,14 +207,15 @@
   /* ================================================================== */
   page('c-cotizacion', () => {
     const r = request.current();
+    if (!r || !r.precio) { toast('No hay una cotización para mostrar. Crea una solicitud primero.', 'warning'); go('solicitar-mudanza.html'); return; }
     const p = r.precio;
     $('#q-route').innerHTML = routeHTML(r, { hollow: true });
     $('#q-mini').innerHTML =
-      '<div class="mini-stat"><strong>' + String(r.distancia).replace('.', ',') + ' km</strong><span>Distancia</span></div>' +
+      '<div class="mini-stat"><strong>Base 1 km</strong><span>Distancia demostrativa</span></div>' +
       '<div class="mini-stat"><strong>' + LABELS.volumen[r.volumen] + '</strong><span>Volumen</span></div>' +
       '<div class="mini-stat"><strong>' + dateShort(r.fecha) + '</strong><span>Fecha</span></div>';
     $('#q-breakdown').innerHTML = kv([
-      ['Distancia (' + String(r.distancia).replace('.', ',') + ' km)', money(p.distancia)],
+      ['Distancia base demostrativa (1 km, no cartográfica)', money(p.distancia)],
       ['Volumen de carga (' + LABELS.volumen[r.volumen].toLowerCase() + ')', money(p.volumen)],
       ['Tipo de vehículo (' + LABELS.vehiculo[r.vehiculo].toLowerCase() + ')', money(p.vehiculo)],
       [r.ayudantes ? ayudantesTxt(r.ayudantes) + ' de carga' : 'Sin ayudantes', money(p.personal)],
@@ -249,6 +240,7 @@
   /* ================================================================== */
   page('c-confirmar', () => {
     const r = request.current();
+    if (!r || !r.apiId || !r.precio) { toast('No hay una cotización local válida. Crea una nueva solicitud.', 'error'); go('solicitar-mudanza.html'); return; }
     const p = r.precio;
     $('#cf-route').innerHTML = routeHTML(r, { box: true });
     $('#cf-details').innerHTML = kv([
@@ -268,31 +260,58 @@
     $('#cf-send').addEventListener('click', e => {
       const btn = e.currentTarget;
       setLoading(btn, true, 'Enviando…');
-      setTimeout(() => {
+      const send = r.apiId ? window.MudGoAPI.confirmRequest(r.apiId) : Promise.reject(new Error('No existe una cotización guardada en el servidor. Vuelve a crear la solicitud.'));
+      send.then(() => {
         request.save(Object.assign(r, { estado: 'esperando', enviada: Date.now(), intentos: 0 }));
-        setLoading(btn, false);
-        openModal('sent-modal');
-        const bar = $('#sent-progress');
-        requestAnimationFrame(() => { bar.style.width = '100%'; });
-        go('estado-solicitud.html', 2600);
-      }, 700);
+        setLoading(btn, false); openModal('sent-modal');
+        const bar = $('#sent-progress'); requestAnimationFrame(() => { bar.style.width = '100%'; });
+        go('estado-solicitud.html?id=' + encodeURIComponent(r.apiId), 2600);
+      }).catch(err => { setLoading(btn, false); toast(err.message || 'No se pudo enviar la solicitud.', 'error'); });
     });
   });
 
   /* ================================================================== */
   /* C06–C10 · Estado de la solicitud                                    */
   /* ================================================================== */
-  page('c-estado', () => {
-    applyStateParam();
+  page('c-estado', async () => {
     const root = $('#estado-root');
-    let timers = [];
-    const clearTimers = () => { timers.forEach(t => clearTimeout(t) || clearInterval(t)); timers = []; };
+    const clearTimers = () => {};
 
-    function render() {
+    async function render() {
       clearTimers();
-      const r = request.get();
+      let r = null;
+      const requestedId = params().get('id');
+      if (requestedId && window.MudGoAPI) {
+        try {
+          const apiRow = await window.MudGoAPI.getRequest(requestedId);
+          const stateMap = { cotizada: 'borrador', esperando_proveedor: 'esperando', buscando_proveedor: 'buscando', aceptada: 'aceptada', pagada: 'pagada', en_camino: 'pagada', en_curso: 'pagada', finalizada: 'pagada', cancelada: 'sin_proveedor' };
+          r = {
+            id: String(apiRow.id), apiId: apiRow.id, apiBacked: true, estado: stateMap[apiRow.estado] || 'borrador',
+            origen: apiRow.origen, destino: apiRow.destino, fecha: apiRow.fecha_servicio, hora: apiRow.hora_servicio,
+            volumen: apiRow.tipo_carga, vehiculo: apiRow.tipo_vehiculo, ayudantes: Number(apiRow.ayudantes || 0),
+            distancia: Number(apiRow.distancia_km || 0),
+            precio: { subtotal: Number(apiRow.subtotal || 0), tarifa: Math.max(0, Number(apiRow.total || 0) - Number(apiRow.subtotal || 0)), total: Number(apiRow.total || 0) },
+            proveedor: apiRow.proveedor_id || null, proveedor_nombre: apiRow.proveedor_nombre || null,
+            proveedor_calificacion: apiRow.proveedor_calificacion || null, proveedor_total_calificaciones: apiRow.proveedor_total_calificaciones || 0,
+            vehiculo_modelo: apiRow.vehiculo_modelo || null, vehiculo_capacidad: apiRow.vehiculo_capacidad || null
+          };
+        } catch (error) {
+          root.innerHTML = emptyState('No se pudo cargar la solicitud', error.message || 'Comprueba tu conexión e inténtalo de nuevo.', 'dashboard-cliente.html', 'Volver al inicio');
+          return;
+        }
+      } else {
+        r = null;
+      }
       if (!r) {
         root.innerHTML = emptyState('No tienes solicitudes activas', 'Cuando envíes una solicitud podrás ver aquí si un proveedor la aceptó.', 'solicitar-mudanza.html', 'Solicitar mudanza');
+        return;
+      }
+      if (r.apiBacked && ['pagada'].includes(r.estado)) {
+        root.innerHTML = emptyState('Pago confirmado', 'Tu servicio está confirmado. Consulta su seguimiento.', 'seguimiento.html?id=' + encodeURIComponent(r.apiId), 'Ver seguimiento');
+        return;
+      }
+      if (r.apiBacked && r.estado === 'borrador') {
+        root.innerHTML = emptyState('Cotización pendiente', 'La solicitud aún no ha sido enviada a los proveedores.', 'dashboard-cliente.html', 'Volver al inicio');
         return;
       }
       const views = { esperando: viewWaiting, aceptada: viewAccepted, rechazada: viewRejected, buscando: viewSearching, sin_proveedor: viewNoProvider };
@@ -305,7 +324,27 @@
       }
       root.innerHTML = views[r.estado](r);
       root.firstElementChild && root.firstElementChild.classList.add('fade-in');
-      bind(r);
+      if (!r.apiBacked) bind(r);
+      if (r.estado === 'aceptada' && r.apiId && window.MudGoAPI) {
+        window.MudGoAPI.getRequest(r.apiId).then(data => {
+          if (!data.proveedor_nombre) return;
+          const card = root.querySelector('.info-grid');
+          const providerCard = card && card.closest('.card');
+          if (!providerCard) return;
+          const name = data.proveedor_nombre;
+          const rating = Number(data.proveedor_calificacion || 0).toFixed(1);
+          const count = Number(data.proveedor_total_calificaciones || 0);
+          const vehicle = data.vehiculo_modelo || ({van:'Van',camion_pequeno:'Camión pequeño',camion_mediano:'Camión mediano',camion_grande:'Camión grande'}[data.tipo_vehiculo] || data.tipo_vehiculo || 'Por asignar');
+          providerCard.querySelector('.avatar').textContent = initials(name);
+          providerCard.querySelector('.strong').textContent = name;
+          const ratingRow = providerCard.querySelector('.strong').parentElement.querySelector('.row');
+          if (ratingRow) ratingRow.innerHTML = stars(5) + '<span>' + rating + '</span><span class="subtle">(' + count + ' reseñas)</span>';
+          const tiles = providerCard.querySelectorAll('.info-tile strong');
+          if (tiles[0]) tiles[0].textContent = '🚛 ' + vehicle;
+          if (tiles[1]) tiles[1].textContent = '⚖️ ' + (data.vehiculo_capacidad || 'Por confirmar');
+          if (tiles[3]) tiles[3].textContent = '⏱ Por confirmar';
+        }).catch(err => console.warn('[MudGo] No se pudo cargar el proveedor asignado:', err));
+      }
     }
 
     function requestSummary(r) {
@@ -314,12 +353,7 @@
         '<div class="mini-stat"><strong>' + time12(r.hora) + '</strong><span>Hora</span></div>' +
         '<div class="mini-stat"><strong>' + money(r.precio.total) + '</strong><span>Estimado</span></div></div></section>';
     }
-    const notifyAvatars = '<div class="avatar-stack"><span class="avatar avatar--sm">CR</span><span class="avatar avatar--sm">JM</span><span class="avatar avatar--sm">AC</span><span class="avatar avatar--sm">RM</span></div>';
-    const demoBar = '<div class="demo-bar"><div class="demo-bar__title">Simula la respuesta del proveedor</div><div class="btn-row">' +
-      '<button class="btn btn--outline btn--sm" data-sim="aceptada">' + icon('check') + 'Aceptar</button>' +
-      '<button class="btn btn--outline btn--sm" data-sim="rechazada">' + icon('x') + 'Rechazar</button>' +
-      '<button class="btn btn--outline btn--sm" data-sim="sin_proveedor">' + icon('ban') + 'Sin proveedores</button></div>' +
-      '<p class="mt-8">También puedes aceptarla desde el panel del proveedor (<a class="blue" href="solicitudes-proveedor.html" target="_blank" rel="noopener">abrir en otra pestaña</a>).</p></div>';
+
 
     /* C06 */
     function viewWaiting(r) {
@@ -327,11 +361,11 @@
         '<section class="card status-hero"><div class="status-icon status-icon--lg status-icon--pulse">' + icon('loader', 'spin') + '<span class="status-icon__badge">!</span></div>' +
         '<div class="mt-16">' + badge('Esperando aceptación', 'orange', true) + '</div>' +
         '<h2>Buscando proveedor</h2><p>Tu solicitud está activa. Los proveedores disponibles la están revisando.</p>' +
-        '<div class="row mt-16" style="justify-content:center"><span class="small subtle">Notificando a</span>' + notifyAvatars + '<span class="small subtle">+12 proveedores</span></div></section>' +
+        '<div class="row mt-16" style="justify-content:center"><span class="small subtle">La solicitud está disponible para proveedores registrados.</span></div></section>' +
         requestSummary(r) +
         '<div class="notice notice--gray mt-16">' + icon('lock') + '<div><strong>Pago bloqueado</strong>El pago estará disponible una vez que un proveedor acepte tu solicitud.</div></div>' +
         '<div class="text-center mt-24"><button class="btn btn--ghost" data-open="cancel-modal">Cancelar solicitud</button></div>' +
-        demoBar + '</div>';
+        '</div>';
     }
 
     /* C07 */
@@ -351,7 +385,7 @@
           ['Distancia', String(r.distancia).replace('.', ',') + ' km']]) + '</section>' +
         '<section class="card card--blue row row--between"><div><div class="small blue">Total a pagar</div><div style="font-size:24px" class="blue">' + money(r.precio.total) + '</div></div>' +
         '<div class="small subtle text-right">Pago protegido<br>hasta la entrega</div></section>' +
-        '<div class="btn-stack"><a class="btn btn--primary btn--lg" href="pago.html">Continuar al pago ' + icon('arrowRight') + '</a>' +
+        '<div class="btn-stack"><a class="btn btn--primary btn--lg" href="pago.html?id=' + encodeURIComponent(r.apiId || r.id) + '">Continuar al pago ' + icon('arrowRight') + '</a>' +
         '<a class="btn btn--ghost" href="dashboard-cliente.html">Decidir después</a></div></div>';
     }
 
@@ -378,12 +412,10 @@
         '<h2>Buscando proveedores cercanos...</h2><p>Notificamos a más proveedores en tu zona para encontrar uno disponible.</p>' +
         '<div class="mt-24" style="max-width:360px;margin-inline:auto"><div class="progress"><div class="progress__bar" id="search-bar"></div></div>' +
         '<p class="small mt-8"><b id="search-pct">0</b>% completado</p></div>' +
-        '<div class="row mt-16" style="justify-content:center">' + notifyAvatars.replace('</div>', '<span class="avatar avatar--sm">LG</span></div>') + '</div></section>' +
+        '<div class="row mt-16" style="justify-content:center"><span class="small subtle">Esperando respuestas de proveedores.</span></div></section>' +
         requestSummary(r) +
         '<div class="text-center mt-24"><button class="btn btn--ghost" data-open="cancel-modal">Cancelar solicitud</button></div>' +
-        '<div class="demo-bar"><div class="demo-bar__title">Resultado de la búsqueda</div><div class="btn-row">' +
-        '<button class="btn btn--outline btn--sm" data-outcome="aceptada">Encontrar proveedor</button>' +
-        '<button class="btn btn--outline btn--sm" data-outcome="sin_proveedor">Ninguno disponible</button></div></div></div>';
+        '</div>';
     }
 
     /* C10 */
@@ -412,67 +444,11 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function bind(r) {
-      $$('[data-sim]', root).forEach(b => b.addEventListener('click', () => {
-        if (b.dataset.sim === 'sin_proveedor') { store.set('simOutcome', 'sin_proveedor'); setState('rechazada'); }
-        else setState(b.dataset.sim);
-      }));
-      $$('[data-go]', root).forEach(b => b.addEventListener('click', () => setState(b.dataset.go)));
-
-      if (r.estado === 'esperando') {
-        // En la demo, un proveedor acepta solo después de un rato
-        timers.push(setTimeout(() => { toast('Un proveedor aceptó tu solicitud', 'success'); setState('aceptada'); }, 20000));
-      }
-      if (r.estado === 'rechazada') {
-        let n = 4;
-        timers.push(setInterval(() => {
-          n -= 1;
-          const c = $('#countdown');
-          if (c) c.textContent = Math.max(n, 0);
-          if (n <= 0) setState('buscando');
-        }, 1000));
-      }
-      if (r.estado === 'buscando') {
-        let pct = 0;
-        const outcome = () => store.get('simOutcome', 'aceptada');
-        $$('[data-outcome]', root).forEach(b => b.addEventListener('click', () => { store.set('simOutcome', b.dataset.outcome); }));
-        timers.push(setInterval(() => {
-          pct = Math.min(100, pct + 4 + Math.random() * 8);
-          const bar = $('#search-bar'); const t = $('#search-pct');
-          if (bar) bar.style.width = pct + '%';
-          if (t) t.textContent = Math.round(pct);
-          if (pct >= 100) {
-            const o = outcome();
-            store.remove('simOutcome');
-            if (o === 'aceptada') toast('Encontramos un proveedor para ti', 'success');
-            setState(o);
-          }
-        }, 450));
-      }
-      const nb = $('#notify-btn');
-      if (nb) nb.addEventListener('click', () => {
-        nb.disabled = true;
-        nb.innerHTML = icon('check') + ' Te avisaremos cuando haya un proveedor';
-        toast('Notificación activada', 'success');
-      });
-    }
+    function bind() { /* Los estados se actualizan exclusivamente desde el backend. */ }
 
     // Cancelar solicitud
-    $('#cancel-confirm').addEventListener('click', () => {
-      const r = request.get();
-      if (r) {
-        const extra = store.get('historialExtra', []);
-        extra.unshift({ id: r.id, origen: r.origen, destino: r.destino.split(',')[0], fecha: r.fecha, proveedor: null, estado: 'Cancelado', costo: 0, rating: null, motivo: 'Cancelado por el cliente' });
-        store.set('historialExtra', extra);
-      }
-      request.clear();
-      closeModal('cancel-modal');
-      toast('Solicitud cancelada. No se realizó ningún cobro.', 'warning');
-      go('dashboard-cliente.html', 900);
-    });
+    $('#cancel-confirm').addEventListener('click', () => { toast('La cancelación desde el cliente aún no está habilitada en el servidor.', 'warning'); closeModal('cancel-modal'); });
 
-    // Si el proveedor acepta/rechaza desde otra pestaña
-    window.addEventListener('storage', e => { if (e.key === 'mudgo.solicitud') render(); });
     window.addEventListener('beforeunload', clearTimers);
     render();
   });
@@ -480,225 +456,137 @@
   /* ================================================================== */
   /* C11 · Pago  +  C12 · Pago exitoso  +  C13 · Pago fallido            */
   /* ================================================================== */
-  page('c-pago', () => {
-    applyStateParam();
-    let r = request.get();
-    if (!r) { r = MG.demoRequest(); r.estado = 'aceptada'; request.save(r); }
-    const flow = $('#pay-flow');
-    const formView = $('#pay-form-view');
-    const failView = $('#pay-fail-view');
-    const blocked = $('#pay-blocked');
-
-    if (!['aceptada', 'pago_fallido'].includes(r.estado)) {
-      formView.classList.add('hidden');
-      blocked.classList.remove('hidden');
-      const early = ['borrador', 'esperando', 'buscando', 'rechazada', 'sin_proveedor'].includes(r.estado);
-      blocked.innerHTML = early
-        ? emptyState('Pago bloqueado', 'El pago estará disponible una vez que un proveedor acepte tu solicitud.', 'estado-solicitud.html', 'Ver estado de la solicitud')
-        : emptyState('Este servicio ya fue pagado', 'Puedes ver los detalles y el seguimiento de tu mudanza.', MG.FLOW_PAGE[r.estado] || 'dashboard-cliente.html', 'Continuar');
+  page('c-pago', async () => {
+    const id = params().get('id') || (request.get() && (request.get().apiId || request.get().id));
+    const flow = $('#pay-flow'), formView = $('#pay-form-view'), failView = $('#pay-fail-view'), blocked = $('#pay-blocked');
+    if (!id) {
+      formView.classList.add('hidden'); blocked.classList.remove('hidden');
+      blocked.innerHTML = emptyState('Solicitud no encontrada', 'Abre el pago desde el estado de una solicitud aceptada.', 'dashboard-cliente.html', 'Volver al inicio'); return;
+    }
+    let r;
+    try { r = await MudGoAPI.getRequest(id); }
+    catch (e) {
+      formView.classList.add('hidden'); blocked.classList.remove('hidden');
+      blocked.innerHTML = emptyState('No se pudo cargar el pago', e.message, 'dashboard-cliente.html', 'Volver al inicio'); return;
+    }
+    if (r.estado !== 'aceptada') {
+      formView.classList.add('hidden'); blocked.classList.remove('hidden');
+      const paid = ['pagada','en_camino','en_curso','finalizada'].includes(r.estado);
+      blocked.innerHTML = paid
+        ? emptyState('Este servicio ya fue pagado', 'El pago está registrado. Consulta la confirmación y el seguimiento.', 'servicio-confirmado.html?id=' + encodeURIComponent(r.id), 'Ver servicio')
+        : emptyState('Pago no disponible', 'El pago solo se habilita después de que un proveedor acepte la solicitud.', 'estado-solicitud.html?id=' + encodeURIComponent(r.id), 'Ver estado');
       return;
     }
-
-    const p = r.precio;
-    $('#pay-summary').innerHTML = kv([
-      ['Mudanza ' + esc(MG.request.shortRoute(r)), money(p.subtotal)],
-      ['Tarifa de servicio', money(p.tarifa)],
-      ['Total', money(p.total), 'kv__row--total']
+    const subtotal=Number(r.subtotal||0), total=Number(r.total||0), fee=Math.max(0,total-subtotal);
+    const viewData={id:r.id,apiId:r.id,origen:r.origen,destino:r.destino,fecha:r.fecha_servicio,hora:String(r.hora_servicio||'').slice(0,5),ayudantes:Number(r.ayudantes||0),precio:{subtotal,tarifa:fee,total}};
+    $('#pay-summary').innerHTML=kv([
+      ['Mudanza '+esc(MG.request.shortRoute(viewData)),money(subtotal)],
+      ['Tarifa de servicio',money(fee)],
+      ['Total',money(total),'kv__row--total']
     ]);
-    const payBtn = $('#pay-btn');
-    payBtn.innerHTML = 'Pagar ' + money(p.total) + ' ' + icon('arrowRight');
-    $('#pay-name').value = DATA.cliente.nombre.toUpperCase();
-
-    function showForm() {
-      flow.innerHTML = flowBar({ label: 'Esperando pago', id: r.id, current: 3, msg: 'El proveedor está reservado. Confirma el pago para asegurar la fecha.' });
-      formView.classList.remove('hidden');
-      failView.classList.add('hidden');
-    }
-    function showFail() {
-      flow.innerHTML = flowBar({ label: 'Pago fallido', id: r.id, current: 3, error: 3, tone: 'red', msg: 'No pudimos procesar tu pago. El proveedor sigue reservado por ahora.' });
-      formView.classList.add('hidden');
-      failView.classList.remove('hidden');
-      failView.classList.add('fade-in');
-    }
-    r.estado === 'pago_fallido' ? showFail() : showForm();
-
-    // Método de pago
-    const methods = $$('[name="metodo"]');
-    function syncMethod() {
-      const m = $('[name="metodo"]:checked').value;
-      $('#card-fields').classList.toggle('hidden', m !== 'tarjeta');
-      $('#wallet-fields').classList.toggle('hidden', m === 'tarjeta');
-      $('#wallet-label').textContent = 'Número de celular ' + (m === 'nequi' ? 'Nequi' : 'Daviplata');
-    }
-    methods.forEach(m => m.addEventListener('change', syncMethod));
-    syncMethod();
-
-    // Formateo de campos de tarjeta
-    const num = $('#card-number'), exp = $('#card-exp'), cvv = $('#card-cvv'), phone = $('#wallet-phone');
-    num.addEventListener('input', () => { num.value = num.value.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 '); });
-    exp.addEventListener('input', () => { let v = exp.value.replace(/\D/g, '').slice(0, 4); if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2); exp.value = v; });
-    cvv.addEventListener('input', () => { cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4); });
-    phone.addEventListener('input', () => { phone.value = phone.value.replace(/\D/g, '').slice(0, 10); });
-
-    function fieldErr(input, bad) { input.closest('.field').classList.toggle('has-error', bad); return !bad; }
-    function validate() {
-      const m = $('[name="metodo"]:checked').value;
-      if (m !== 'tarjeta') return fieldErr(phone, !/^3\d{9}$/.test(phone.value));
-      let ok = true;
-      ok = fieldErr(num, num.value.replace(/\s/g, '').length !== 16) && ok;
-      const [mm, yy] = exp.value.split('/').map(Number);
-      const now = new Date();
-      const expired = !mm || mm > 12 || !yy || (2000 + yy < now.getFullYear()) || (2000 + yy === now.getFullYear() && mm < now.getMonth() + 1);
-      ok = fieldErr(exp, expired) && ok;
-      ok = fieldErr(cvv, cvv.value.length < 3) && ok;
-      ok = fieldErr($('#pay-name'), $('#pay-name').value.trim().length < 3) && ok;
-      return ok;
-    }
-
-    $('#pay-form').addEventListener('submit', e => {
-      e.preventDefault();
-      if (!validate()) { toast('Revisa los datos de pago', 'error'); return; }
-      setLoading(payBtn, true, 'Procesando pago…');
-      const m = $('[name="metodo"]:checked').value;
-      const willFail = $('#sim-fail').checked || (m === 'tarjeta' && num.value.replace(/\s/g, '').endsWith('0002'));
-      setTimeout(() => {
-        setLoading(payBtn, false);
-        if (willFail) {
-          r.estado = 'pago_fallido';
-          r.pagosFallidos = (r.pagosFallidos || 0) + 1;
-          request.save(r);
-          showFail();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-          r.estado = 'pagada';
-          r.pago = { metodo: m, fecha: Date.now(), ultimos: m === 'tarjeta' ? num.value.slice(-4) : phone.value.slice(-4) };
-          r.servicio = request.serviceNumber(r);
-          request.save(r);
-          $('#success-amount').textContent = money(p.total);
-          openModal('success-modal');
-          requestAnimationFrame(() => { $('#success-progress').style.width = '100%'; });
-          go('servicio-confirmado.html', 2600);
+    const payBtn=$('#pay-btn'); payBtn.innerHTML='Pagar '+money(total)+' '+icon('arrowRight');
+    const me=await MudGoAPI.me().catch(()=>null); $('#pay-name').value=String(me&&me.nombre||'').toUpperCase();
+    flow.innerHTML=flowBar({label:'Esperando pago',id:r.id,current:3,msg:'El proveedor está reservado. Confirma el pago para asegurar la fecha.'});
+    formView.classList.remove('hidden'); failView.classList.add('hidden');
+    const methods=$$('[name="metodo"]');
+    function syncMethod(){const m=$('[name="metodo"]:checked').value;$('#card-fields').classList.toggle('hidden',m!=='tarjeta');$('#wallet-fields').classList.toggle('hidden',m==='tarjeta');$('#wallet-label').textContent='Número de celular '+(m==='nequi'?'Nequi':'Daviplata');}
+    methods.forEach(m=>m.addEventListener('change',syncMethod)); syncMethod();
+    const num=$('#card-number'),exp=$('#card-exp'),cvv=$('#card-cvv'),phone=$('#wallet-phone');
+    num.addEventListener('input',()=>{num.value=num.value.replace(/\D/g,'').slice(0,16).replace(/(\d{4})(?=\d)/g,'$1 ');});
+    exp.addEventListener('input',()=>{let v=exp.value.replace(/\D/g,'').slice(0,4);if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2);exp.value=v;});
+    cvv.addEventListener('input',()=>{cvv.value=cvv.value.replace(/\D/g,'').slice(0,4);});
+    phone.addEventListener('input',()=>{phone.value=phone.value.replace(/\D/g,'').slice(0,10);});
+    function fieldErr(input,bad){input.closest('.field').classList.toggle('has-error',bad);return !bad;}
+    function validate(){const m=$('[name="metodo"]:checked').value;if(m!=='tarjeta')return fieldErr(phone,!/^3\d{9}$/.test(phone.value));let ok=true;ok=fieldErr(num,num.value.replace(/\s/g,'').length!==16)&&ok;const [mm,yy]=exp.value.split('/').map(Number),now=new Date();const expired=!mm||mm>12||!yy||(2000+yy<now.getFullYear())||(2000+yy===now.getFullYear()&&mm<now.getMonth()+1);ok=fieldErr(exp,expired)&&ok;ok=fieldErr(cvv,cvv.value.length<3)&&ok;ok=fieldErr($('#pay-name'),$('#pay-name').value.trim().length<3)&&ok;return ok;}
+    $('#pay-form').addEventListener('submit',async e=>{
+      e.preventDefault(); if(!validate()){toast('Revisa los datos de pago','error');return;}
+      setLoading(payBtn,true,'Procesando pago…'); const selected=$('[name="metodo"]:checked').value;
+      const fail=$('#sim-fail').checked||(selected==='tarjeta'&&num.value.replace(/\s/g,'').endsWith('0002'));
+      try{
+        const result=await MudGoAPI.createPayment({solicitud_id:Number(r.id),metodo:selected==='tarjeta'?'tarjeta':'transferencia',resultado_demo:fail?'fallido':'exitoso'});
+        setLoading(payBtn,false);
+        if(result.estado==='fallido'){
+          formView.classList.add('hidden');failView.classList.remove('hidden');
+          flow.innerHTML=flowBar({label:'Pago fallido',id:r.id,current:3,error:3,tone:'red',msg:'No pudimos procesar el pago. El proveedor sigue reservado por ahora.'});return;
         }
-      }, 1600);
+        $('#success-amount').textContent=money(result.monto||total);openModal('success-modal');
+        request.save({...viewData,estado:'pagada'});requestAnimationFrame(()=>{$('#success-progress').style.width='100%';});
+        go('servicio-confirmado.html?id='+encodeURIComponent(r.id),1800);
+      }catch(error){setLoading(payBtn,false);toast(error.message||'No fue posible registrar el pago.','error');}
     });
-
-    $('#retry-btn').addEventListener('click', () => { r.estado = 'aceptada'; request.save(r); showForm(); });
-    $('#change-method-btn').addEventListener('click', () => {
-      r.estado = 'aceptada'; request.save(r); showForm();
-      const nequi = $('[name="metodo"][value="nequi"]'); nequi.checked = true; syncMethod();
-      $('#methods').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    $('#retry-btn').addEventListener('click',()=>{failView.classList.add('hidden');formView.classList.remove('hidden');});
+    $('#change-method-btn').addEventListener('click',()=>{failView.classList.add('hidden');formView.classList.remove('hidden');const nequi=$('[name="metodo"][value="nequi"]');nequi.checked=true;syncMethod();$('#methods').scrollIntoView({behavior:'smooth',block:'center'});});
   });
 
   /* ================================================================== */
   /* C14 · Servicio confirmado                                           */
   /* ================================================================== */
-  page('c-confirmado', () => {
-    applyStateParam();
-    let r = request.get();
-    if (!r) { r = MG.demoRequest(); r.estado = 'pagada'; r.servicio = 'MG-20260810-0042'; }
-    if (!['pagada', 'en_curso'].includes(r.estado)) {
-      $('#confirm-root').innerHTML = emptyState('Aún no hay un servicio confirmado', 'El servicio se confirma cuando el pago se procesa correctamente.', MG.FLOW_PAGE[r.estado] || 'dashboard-cliente.html', 'Ver mi solicitud');
-      return;
-    }
-    const num = r.servicio || request.serviceNumber(r);
-    $('#cs-flow').innerHTML = flowBar({ label: 'Servicio confirmado', id: num, current: 4, spin: false, msg: 'El proveedor fue notificado y se preparará para la fecha acordada.' });
-    $('#cs-number').textContent = '#' + num;
-    $('#cs-details').innerHTML = kv([
-      ['Fecha', dateLong(r.fecha)],
-      ['Hora', time12(r.hora)],
-      ['Proveedor', esc(P.nombre)],
-      ['Vehículo', esc(P.vehiculo + ' · ' + P.placa)],
-      ['Personal', ayudantesTxt(r.ayudantes)],
-      ['Total pagado', '<span class="blue">' + money(r.precio.total) + '</span>']
+  page('c-confirmado', async () => {
+    const id=params().get('id')||(request.get()&&(request.get().apiId||request.get().id));
+    if(!id){$('#confirm-root').innerHTML=emptyState('Servicio no encontrado','No se recibió el identificador de la solicitud.','dashboard-cliente.html','Volver al inicio');return;}
+    let r;try{r=await MudGoAPI.getRequest(id);}catch(e){$('#confirm-root').innerHTML=emptyState('No se pudo cargar la confirmación',e.message,'dashboard-cliente.html','Volver al inicio');return;}
+    if(!['pagada','en_camino','en_curso','finalizada'].includes(r.estado)){$('#confirm-root').innerHTML=emptyState('Aún no hay un servicio confirmado','El servicio se confirma cuando el pago se registra correctamente.','estado-solicitud.html?id='+encodeURIComponent(r.id),'Ver mi solicitud');return;}
+    const provider=r.proveedor_nombre||'Proveedor asignado';
+    const vehicle=[r.vehiculo_modelo,r.vehiculo_capacidad].filter(Boolean).join(' · ')||r.tipo_vehiculo||'Vehículo por confirmar';
+    const serviceCode=r.codigo||('MG-'+String(r.id).padStart(6,'0'));
+    $('#cs-flow').innerHTML=flowBar({label:'Servicio confirmado',id:serviceCode,current:r.estado==='finalizada'?5:4,spin:false,msg:'El proveedor fue notificado y se preparará para la fecha acordada.'});
+    $('#cs-number').textContent='#'+serviceCode;
+    $('#cs-details').innerHTML=kv([
+      ['Fecha',dateLong(r.fecha_servicio)],['Hora',time12(r.hora_servicio)],['Proveedor',esc(provider)],['Vehículo',esc(vehicle)],
+      ['Personal',ayudantesTxt(Number(r.ayudantes||0))],['Total pagado','<span class="blue">'+money(r.total||0)+'</span>']
     ]);
-    const [h, m] = r.hora.split(':').map(Number);
-    const fin = String(h + 3).padStart(2, '0') + ':' + String(m).padStart(2, '0');
-    const day = dateShort(r.fecha).split(' ')[0];
-    $('#cs-timeline').innerHTML = [
-      ['Pago confirmado', 'Ahora', 'is-done'], ['Proveedor notificado', 'Ahora', 'is-done'],
-      ['Servicio en camino', day + ' ' + r.hora, ''], ['Mudanza finalizada', day + ' ~' + fin, '']
-    ].map(([t, w, c], i) => '<div class="timeline__item ' + c + '"><span class="timeline__dot">' + (c ? icon('check') : i + 1) + '</span>' + t + '<span class="timeline__time">' + w + '</span></div>').join('');
+    const timeline=[['Pago confirmado','Registrado','is-done'],['Proveedor notificado','Registrado','is-done'],['Servicio en camino','Pendiente',''],['Mudanza finalizada','Pendiente','']];
+    if(['en_camino','en_curso','finalizada'].includes(r.estado))timeline[2]=['Servicio en camino','Actualizado','is-done'];
+    if(['en_curso','finalizada'].includes(r.estado))timeline[3]=['Mudanza finalizada','Actualizado','is-done'];
+    $('#cs-timeline').innerHTML=timeline.map(([t,w,c],i)=>'<div class="timeline__item '+c+'"><span class="timeline__dot">'+(c?icon('check'):i+1)+'</span>'+t+'<span class="timeline__time">'+w+'</span></div>').join('');
+    const track=document.querySelector('#confirm-root a[href="seguimiento.html"]');if(track)track.href='seguimiento.html?id='+encodeURIComponent(r.id);
   });
 
   /* ================================================================== */
   /* C15 · Seguimiento en vivo                                           */
   /* ================================================================== */
-  page('c-seguimiento', () => {
-    applyStateParam();
-    let r = request.get();
-    const demo = !r;
-    if (demo) { r = MG.demoRequest(); r.estado = 'en_curso'; r.servicio = 'MG-20260810-0042'; }
-    if (!['pagada', 'en_curso'].includes(r.estado)) {
-      $('#track-root').innerHTML = emptyState('No tienes un servicio en curso', 'El seguimiento en vivo se activa cuando tu mudanza está confirmada y pagada.', MG.FLOW_PAGE[r.estado] || 'solicitar-mudanza.html', MG.FLOW_PAGE[r.estado] ? 'Ver mi solicitud' : 'Solicitar mudanza');
-      return;
-    }
-    if (!demo && r.estado === 'pagada') { r.estado = 'en_curso'; request.save(r); }
-    const num = r.servicio || request.serviceNumber(r);
-    $('#tr-id').textContent = '#' + num;
-    $('#tr-flow').innerHTML = flowBar({ label: 'Servicio en proceso', id: num, current: 4, msg: 'Tu mudanza está en curso. Haz seguimiento en tiempo real.' });
-    $('#tr-from').textContent = shortAddr(r.origen);
-    $('#tr-to').textContent = shortAddr(r.destino);
-    $('#tr-call').href = 'tel:' + P.telefono.replace(/\s/g, '');
-
-    // Movimiento del camión sobre una curva Bézier (mapa simulado)
-    const map = $('#map');
-    const truck = $('#truck');
-    const eta = $('#truck-eta');
-    const path = $('#route-path');
-    const total = path.getTotalLength();
-    const DURATION = 90; // segundos de demo para recorrer la ruta
-    let t = Math.min(store.get('trackProgress', 0.18), 0.98);
-    function place() {
-      const pt = path.getPointAtLength(total * t);
-      const vb = path.ownerSVGElement.viewBox.baseVal;
-      truck.style.left = (pt.x / vb.width * 100) + '%';
-      truck.style.top = (pt.y / vb.height * 100) + '%';
-      const mins = Math.max(1, Math.round(15 * (1 - t) / 0.82));
-      eta.textContent = t >= 0.99 ? 'Llegó' : '~' + mins + ' min';
-      $('#tr-progress').style.width = Math.round(t * 100) + '%';
-    }
-    place();
-    const timer = setInterval(() => {
-      t = Math.min(1, t + 1 / DURATION);
-      store.set('trackProgress', t);
-      place();
-      if (t >= 1) { clearInterval(timer); toast('Tu mudanza llegó al destino. Confirma la entrega.', 'info'); $('#deliver-btn').classList.add('is-pulse'); }
-    }, 1000);
-    map.setAttribute('aria-label', 'Mapa simulado de la ruta desde ' + r.origen + ' hasta ' + r.destino);
-
-    $('#deliver-confirm').addEventListener('click', () => {
-      clearInterval(timer);
-      store.remove('trackProgress');
-      if (!demo) { r.estado = 'finalizada'; r.finalizada = Date.now(); request.save(r); }
-      closeModal('deliver-modal');
-      go('servicio-finalizado.html' + (demo ? '?estado=finalizada' : ''));
-    });
+  page('c-seguimiento', async () => {
+    const local=request.get(); const id=params().get('id')||(local&&local.id); if(!id){$('#track-root').innerHTML=emptyState('No hay una solicitud seleccionada','Abre el seguimiento desde tu solicitud.','historial-cliente.html','Ver historial');return;}
+    let r;try{r=await MudGoAPI.getRequest(id);}catch(e){$('#track-root').innerHTML=emptyState('No se pudo cargar el seguimiento',e.message,'dashboard-cliente.html','Volver al inicio');return;}
+    if(!['pagada','en_camino','en_curso'].includes(r.estado)){ $('#track-root').innerHTML=emptyState('El servicio no está en curso','El seguimiento estará disponible cuando el proveedor inicie el servicio.','estado-solicitud.html','Ver solicitud');return; }
+    const provider=r.proveedor_nombre||'Proveedor asignado';const pn=$('#tr-provider-name');if(pn)pn.textContent=provider;const pa=$('#tr-provider-avatar');if(pa)pa.textContent=initials(provider);const pv=$('#tr-provider-vehicle');if(pv)pv.textContent=r.vehiculo_modelo||r.tipo_vehiculo||'Vehículo por asignar';const pr=$('#tr-provider-rating');if(pr)pr.textContent=r.proveedor_calificacion?'★ '+Number(r.proveedor_calificacion).toFixed(1)+' · '+Number(r.proveedor_total_calificaciones||0)+' reseñas':'';$('#tr-id').textContent='#MG-'+String(r.id).padStart(6,'0');$('#tr-from').textContent=shortAddr(r.origen);$('#tr-to').textContent=shortAddr(r.destino);
+    const call=$('#tr-call');if(call){call.href=r.proveedor_telefono?'tel:'+r.proveedor_telefono:'#';call.hidden=!r.proveedor_telefono;}
+    const card=document.querySelector('#track-root .provider-name');if(card)card.textContent=provider;
+    $('#tr-flow').innerHTML=flowBar({label:r.estado==='pagada'?'Servicio confirmado':'Servicio en proceso',id:r.id,current:r.estado==='pagada'?3:4,msg:r.estado==='pagada'?'El proveedor está preparando el servicio.':'El proveedor inició el servicio.'});
+    $('#tr-from').textContent=shortAddr(r.origen);$('#tr-to').textContent=shortAddr(r.destino);
+    // El mapa es ilustrativo: no se simula movimiento GPS ni se cambia el estado desde el navegador del cliente.
+    const map=$('#map');map.setAttribute('aria-label','Representación ilustrativa de la ruta desde '+r.origen+' hasta '+r.destino);
+    const eta=$('#truck-eta');if(eta)eta.textContent='Ubicación no disponible';const progress=$('#tr-progress');if(progress)progress.style.width=r.estado==='en_curso'?'55%':'25%';
+    const refresh=async()=>{try{const fresh=await MudGoAPI.getRequest(id);if(fresh.estado==='finalizada'){clearInterval(timer);go('servicio-finalizado.html?id='+id);}}catch(e){console.warn(e);}};
+    const timer=setInterval(refresh,5000);
+    const confirm=$('#deliver-confirm');if(confirm){confirm.disabled=true;confirm.textContent='La finalización la registra el proveedor';}
   });
 
   /* ================================================================== */
   /* C16 · Servicio finalizado                                           */
   /* ================================================================== */
-  page('c-finalizado', () => {
-    applyStateParam();
-    let r = request.get() || Object.assign(MG.demoRequest(), { estado: 'finalizada', servicio: 'MG-20260810-0042' });
-    if (r.estado !== 'finalizada') {
-      $('#done-root').innerHTML = emptyState('El servicio aún no ha finalizado', 'Cuando confirmes la entrega en el seguimiento, verás aquí el resumen.', MG.FLOW_PAGE[r.estado] || 'dashboard-cliente.html', 'Ver mi servicio');
-      return;
-    }
-    const num = r.servicio || request.serviceNumber(r);
-    $('#done-flow').innerHTML = flowBar({ label: 'Servicio finalizado', id: num, current: 5, tone: 'green', msg: 'Tu mudanza fue completada exitosamente. ¡Bienvenido a tu nuevo hogar!' });
-    $('#done-summary').innerHTML = kv([
-      ['Proveedor', esc(P.nombre)], ['Vehículo', esc(P.vehiculo)], ['Origen', esc(r.origen)], ['Destino', esc(r.destino)],
-      ['Duración', '2h 45min'], ['Total cobrado', '<span class="blue strong">' + money(r.precio.total) + '</span>']
-    ]);
+  page('c-finalizado', async () => {
+    const id=params().get('id')||(request.get()&&request.get().id);if(!id){$('#done-root').innerHTML=emptyState('Servicio no encontrado','No hay un servicio seleccionado.','historial-cliente.html','Ver historial');return;}
+    try{const r=await MudGoAPI.getRequest(id);if(r.estado!=='finalizada'){$('#done-root').innerHTML=emptyState('El servicio aún no ha finalizado','El proveedor debe registrar la finalización.','seguimiento.html','Ver seguimiento');return;}
+      $('#done-flow').innerHTML=flowBar({label:'Servicio finalizado',id:r.id,current:5,tone:'green',msg:'Tu mudanza fue completada exitosamente.'});
+      $('#done-summary').innerHTML=kv([['Proveedor',esc(r.proveedor_nombre||'Proveedor')],['Vehículo',esc(r.vehiculo_modelo||r.tipo_vehiculo||'—')],['Origen',esc(r.origen)],['Destino',esc(r.destino)],['Fecha',esc(r.fecha_servicio)],['Total', '<span class="blue strong">'+money(r.total)+'</span>']]);const ratingLink=$('#rate-service-link');if(ratingLink)ratingLink.href='calificar.html?id='+encodeURIComponent(r.id);
+    }catch(e){$('#done-root').innerHTML=emptyState('No se pudo cargar el servicio',e.message,'historial-cliente.html','Ver historial');}
   });
 
   /* ================================================================== */
   /* C17 · Calificación                                                  */
   /* ================================================================== */
-  page('c-calificar', () => {
-    const r = request.get();
+  page('c-calificar', async () => {
+    const id = params().get('id');
+    if (!id) { toast('Falta el identificador del servicio.', 'error'); return; }
+    let service;
+    try {
+      service = await MudGoAPI.getRequest(id);
+      if (service.estado !== 'finalizada') throw new Error('Solo puedes calificar un servicio finalizado.');
+      if (!service.proveedor_id) throw new Error('El servicio no tiene un proveedor asignado.');
+      const title = document.querySelector('.page-head__sub');
+      if (title) title.textContent = 'Con ' + (service.proveedor_nombre || 'tu proveedor');
+    } catch (e) { toast(e.message, 'error'); return; }
     let value = 0;
     const btns = $$('#rating button');
     const labels = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', '¡Excelente!'];
@@ -710,164 +598,87 @@
       b.addEventListener('click', () => {
         value = i + 1;
         btns.forEach((x, j) => x.setAttribute('aria-pressed', j < value ? 'true' : 'false'));
-        $('#rating-label').textContent = labels[value];
-        send.disabled = false;
+        $('#rating-label').textContent = labels[value]; send.disabled = false;
       });
     });
     $('#rating').addEventListener('mouseleave', () => paint(value));
-
     $$('.chip input').forEach(c => c.addEventListener('change', () => c.closest('.chip').classList.toggle('is-selected', c.checked)));
-
-    function finish(rated) {
-      if (r) {
-        const extra = store.get('historialExtra', []);
-        extra.unshift({
-          id: r.id, origen: r.origen, destino: r.destino.split(',')[0], fecha: r.fecha, proveedor: P.corto, estado: 'Finalizado',
-          costo: r.precio.total, rating: rated ? value : null, vehiculo: P.vehiculo + ' · ' + P.placa, inicio: time12(r.hora), fin: '—'
-        });
-        store.set('historialExtra', extra);
-        request.clear();
-      }
-    }
-    $('#rate-form').addEventListener('submit', e => {
-      e.preventDefault();
-      if (!value) return;
+    $('#rate-form').addEventListener('submit', async e => {
+      e.preventDefault(); if (!value) return;
       setLoading(send, true, 'Enviando…');
-      setTimeout(() => {
-        finish(true);
-        toast('¡Gracias por calificar a ' + P.corto + '!', 'success');
-        go('historial-cliente.html', 900);
-      }, 700);
+      try {
+        const chips = $$('.chip input:checked').map(c => c.value || c.closest('.chip').textContent.trim());
+        const comment = [chips.join(', '), $('#comentario')?.value?.trim()].filter(Boolean).join('. ');
+        await MudGoAPI.createRating({ solicitud_id: Number(id), puntuacion: value, comentario: comment });
+        toast('Calificación registrada.', 'success'); go('historial-cliente.html', 700);
+      } catch (err) { toast(err.message || 'No se pudo registrar la calificación.', 'error'); }
+      finally { setLoading(send, false); }
     });
-    $('#rate-skip').addEventListener('click', () => { finish(false); go('dashboard-cliente.html'); });
+    $('#rate-skip').addEventListener('click', () => go('historial-cliente.html'));
   });
 
   /* ================================================================== */
   /* C18 · Historial de servicios                                        */
   /* ================================================================== */
-  page('c-historial', () => {
-    const all = historyList();
-    const done = all.filter(h => h.estado === 'Finalizado');
-    $('#hist-count').textContent = done.length + ' servicios realizados';
-    const body = $('#hist-body');
-    let filter = 'todos';
-    function render() {
-      const rows = all.filter(h => filter === 'todos' || h.estado.toLowerCase() === filter);
-      body.innerHTML = rows.length ? rows.map(h =>
-        '<tr tabindex="0" data-id="' + esc(h.id) + '" style="cursor:pointer">' +
-        '<td data-label="ID"><span class="id">#' + esc(h.id) + '</span></td>' +
-        '<td data-label="Ruta">' + esc(h.origen) + '<span class="sub">→ ' + esc(h.destino) + '</span></td>' +
-        '<td data-label="Fecha">' + dateMed(h.fecha) + '</td>' +
-        '<td data-label="Proveedor">' + (h.proveedor ? esc(h.proveedor) : '<span class="muted">N/A</span>') + '</td>' +
-        '<td data-label="Estado">' + badge(h.estado) + '</td>' +
-        '<td data-label="Costo" class="strong">' + money(h.costo) + '</td>' +
-        '<td data-label="Calificación">' + (h.rating ? stars(h.rating) : '<span class="muted">—</span>') + '</td></tr>'
-      ).join('') : '<tr><td colspan="7"><div class="empty"><div class="empty__icon">📋</div>No hay servicios en esta categoría.</div></td></tr>';
-    }
-    initTabs($('#hist-tabs'), f => { filter = f; render(); });
-    render();
-
-    function detail(id) {
-      const h = all.find(x => x.id === id);
-      if (!h) return;
-      $('#detail-title').textContent = 'Servicio #' + h.id;
-      $('#detail-body').innerHTML =
-        '<div class="row row--between mb-16">' + badge(h.estado) + '<span class="small muted">' + dateLong(h.fecha) + '</span></div>' +
-        routeHTML({ origen: h.origen, destino: h.destino }, { box: true }) +
-        (h.estado === 'Cancelado'
-          ? '<div class="notice notice--red mt-16">' + icon('info') + '<div><strong>Este servicio fue cancelado</strong>' + esc(h.motivo || 'Cancelado') + '. No se realizó ningún cobro.</div></div>'
-          : '<div class="mt-16">' + kv([['Proveedor', esc(h.proveedor)], ['Vehículo', esc(h.vehiculo || '—')], ['Hora inicio', esc(h.inicio || '—')], ['Hora fin', esc(h.fin || '—')],
-            ['Tu calificación', h.rating ? stars(h.rating) + ' ' + h.rating.toFixed(1) : '<span class="muted">Sin calificar</span>'], ['Costo total', '<span class="blue strong">' + money(h.costo) + '</span>']]) + '</div>');
-      $('#detail-repeat').href = 'solicitar-mudanza.html';
-      $('#detail-repeat').textContent = h.estado === 'Cancelado' ? 'Agendar nuevo servicio' : 'Repetir servicio';
-      openModal('detail-modal');
-    }
-    body.addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (tr) detail(tr.dataset.id); });
-    body.addEventListener('keydown', e => { const tr = e.target.closest('tr[data-id]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); detail(tr.dataset.id); } });
-    const qid = params().get('id');
-    if (qid) detail(qid);
+  page('c-historial', async () => {
+    let all=[];try{const rows=await MudGoAPI.requests();all=rows.map(r=>({id:String(r.id),origen:r.origen,destino:r.destino,fecha:r.fecha_servicio,proveedor:r.proveedor_nombre||null,estado:r.estado==='finalizada'?'Finalizado':r.estado==='cancelada'?'Cancelado':r.estado==='en_curso'?'En curso':r.estado==='en_camino'?'En camino':r.estado==='pagada'?'Pagado':r.estado==='aceptada'?'Aceptado':'En proceso',costo:Number(r.total||0),rating:null,vehiculo:r.vehiculo_modelo||r.tipo_vehiculo}));}catch(e){toast(e.message,'error');}
+    const done=all.filter(h=>h.estado==='Finalizado');$('#hist-count').textContent=done.length+' servicios realizados';const body=$('#hist-body');let filter='todos';
+    function render(){const rows=all.filter(h=>filter==='todos'||(filter==='finalizado'&&h.estado==='Finalizado')||(filter==='cancelado'&&h.estado==='Cancelado'));body.innerHTML=rows.length?rows.map(h=>'<tr><td><span class="id">#'+esc(h.id)+'</span></td><td>'+esc(h.origen)+'<span class="sub">→ '+esc(h.destino)+'</span></td><td>'+dateMed(h.fecha)+'</td><td>'+esc(h.proveedor||'—')+'</td><td>'+badge(h.estado)+'</td><td>'+money(h.costo)+'</td><td>—</td></tr>').join(''):'<tr><td colspan="7">No hay servicios registrados.</td></tr>';}
+    initTabs($('#hist-tabs'),f=>{filter=f;render();});render();
   });
 
   /* ================================================================== */
   /* C19 · Perfil                                                        */
   /* ================================================================== */
-  page('c-perfil', () => {
-    const user = Object.assign({}, DATA.cliente, store.get('perfilCliente', {}));
-    const paint = () => {
-      $('#pf-name').textContent = user.nombre;
-      $('#pf-mail').textContent = user.correo;
-      $('#pf-phone').textContent = user.telefono;
-      $('#pf-avatar').textContent = initials(user.nombre);
+  page('c-perfil', async () => {
+    const form = $('#form-datos');
+    const paintProfile = p => {
+      const name = p.nombre || 'Cliente';
+      $('#pf-name').textContent = name; $('#pf-mail').textContent = p.correo || '';
+      $('#pf-phone').textContent = p.telefono || ''; $('#pf-avatar').textContent = initials(name);
+      form.elements.nombre.value = p.nombre || ''; form.elements.correo.value = p.correo || '';
+      form.elements.telefono.value = p.telefono || '';
+      if (p.ciudad) form.elements.ciudad.value = p.ciudad;
     };
-    paint();
-    const f = $('#form-datos');
-    f.elements.nombre.value = user.nombre;
-    f.elements.correo.value = user.correo;
-    f.elements.telefono.value = user.telefono;
-    f.elements.ciudad.value = user.ciudad;
+    try {
+      const [profile, rows] = await Promise.all([MudGoAPI.profile(), MudGoAPI.requests()]);
+      paintProfile(profile);
+      $('#pf-moves').textContent = String(rows.filter(r => r.estado === 'finalizada').length);
+      $('#pf-rating').textContent = '—';
+      $('#pf-tenure').textContent = profile.created_at ? new Date(profile.created_at).toLocaleDateString('es-CO',{month:'short',year:'numeric'}) : '—';
+    } catch (err) { toast('No se pudo cargar el perfil: ' + err.message, 'error'); }
 
-    // Menú tipo acordeón
     $$('.menu-item').forEach(item => {
       const btn = $('.list-row', item);
-      btn.addEventListener('click', () => {
-        const open = item.classList.toggle('is-open');
-        btn.setAttribute('aria-expanded', open);
-        $('.menu-panel', item).classList.toggle('hidden', !open);
-      });
+      btn.addEventListener('click', () => { const open=item.classList.toggle('is-open');btn.setAttribute('aria-expanded',open);$('.menu-panel',item).classList.toggle('hidden',!open); });
     });
 
-    f.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      const ok = f.elements.nombre.value.trim().length > 2 && /\S+@\S+\.\S+/.test(f.elements.correo.value);
-      if (!ok) { toast('Revisa el nombre y el correo', 'error'); return; }
-      Object.assign(user, { nombre: f.elements.nombre.value.trim(), correo: f.elements.correo.value.trim(), telefono: f.elements.telefono.value.trim(), ciudad: f.elements.ciudad.value });
-      store.set('perfilCliente', { nombre: user.nombre, correo: user.correo, telefono: user.telefono, ciudad: user.ciudad });
-      paint();
-      toast('Datos personales actualizados', 'success');
+      const data={nombre:form.elements.nombre.value.trim(),correo:form.elements.correo.value.trim(),telefono:form.elements.telefono.value.trim()};if(form.elements.ciudad.value)data.ciudad=form.elements.ciudad.value;
+      if(data.nombre.length<3||!/^\S+@\S+\.\S+$/.test(data.correo))return toast('Revisa el nombre y el correo electrónico.','error');
+      const button=form.querySelector('button[type="submit"]');button.disabled=true;
+      try { const updated=await MudGoAPI.updateProfile(data); const fresh=await MudGoAPI.profile();paintProfile(fresh);if(window.MG_USER){window.MG_USER.nombre=fresh.nombre;window.MG_USER.correo=fresh.correo;window.MG_USER.telefono=fresh.telefono;}toast('Datos personales guardados en tu cuenta.','success'); }
+      catch(err){toast(err.message,'error');} finally{button.disabled=false;}
     });
 
-    // Direcciones
-    const addrs = store.get('direcciones', [{ alias: 'Casa', dir: 'Calle 72 #10-45, Bogotá' }, { alias: 'Oficina', dir: 'Av. El Dorado #68C-61, Bogotá' }]);
-    function paintAddrs() {
-      $('#addr-count').textContent = addrs.length + (addrs.length === 1 ? ' dirección guardada' : ' direcciones guardadas');
-      $('#addr-list').innerHTML = addrs.map((a, i) => '<div class="reason"><span class="reason__icon">📍</span><div style="flex:1"><strong>' + esc(a.alias) + '</strong><span>' + esc(a.dir) + '</span></div>' +
-        '<button class="btn btn--ghost btn--sm" data-del="' + i + '" aria-label="Eliminar ' + esc(a.alias) + '">' + icon('trash') + '</button></div>').join('');
+    const addressList=$('#addr-list');
+    async function loadAddresses(){
+      const rows=await MudGoAPI.addresses();$('#addr-count').textContent=rows.length+(rows.length===1?' dirección guardada':' direcciones guardadas');
+      addressList.innerHTML=rows.map(a=>`<div class="reason"><span class="reason__icon">📍</span><div style="flex:1"><strong>${esc(a.alias)}</strong><span>${esc(a.direccion)}</span></div><button class="btn btn--ghost btn--sm" data-del="${Number(a.id)}" aria-label="Eliminar dirección">${icon('trash')}</button></div>`).join('')||'<p class="small muted">Aún no tienes direcciones guardadas.</p>';
     }
-    paintAddrs();
-    $('#addr-list').addEventListener('click', e => {
-      const b = e.target.closest('[data-del]'); if (!b) return;
-      addrs.splice(+b.dataset.del, 1); store.set('direcciones', addrs); paintAddrs(); toast('Dirección eliminada', 'warning');
-    });
-    $('#form-addr').addEventListener('submit', e => {
-      e.preventDefault();
-      const fa = e.currentTarget;
-      if (fa.elements.dir.value.trim().length < 6) { toast('Escribe una dirección válida', 'error'); return; }
-      addrs.push({ alias: fa.elements.alias.value.trim() || 'Otra', dir: fa.elements.dir.value.trim() });
-      store.set('direcciones', addrs); paintAddrs(); fa.reset(); toast('Dirección guardada', 'success');
-    });
+    try{await loadAddresses();}catch(err){toast('No se pudieron cargar las direcciones: '+err.message,'error');}
+    addressList.addEventListener('click',async e=>{const b=e.target.closest('[data-del]');if(!b)return;b.disabled=true;try{await MudGoAPI.deleteAddress(b.dataset.del);await loadAddresses();toast('Dirección eliminada.','success');}catch(err){b.disabled=false;toast(err.message,'error');}});
+    $('#form-addr').addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;const alias=f.elements.alias.value.trim()||'Otra';const direccion=f.elements.dir.value.trim();if(direccion.length<6)return toast('Escribe una dirección válida.','error');const b=f.querySelector('button[type="submit"]');b.disabled=true;try{await MudGoAPI.addAddress({alias,direccion});f.reset();await loadAddresses();toast('Dirección guardada en tu cuenta.','success');}catch(err){toast(err.message,'error');}finally{b.disabled=false;}});
 
-    // Seguridad
-    $('#form-pass').addEventListener('submit', e => {
-      e.preventDefault();
-      const fp = e.currentTarget;
-      const nw = fp.elements.nueva.value, cf = fp.elements.confirmar.value;
-      if (!fp.elements.actual.value) return toast('Escribe tu contraseña actual', 'error');
-      if (nw.length < 8) return toast('La nueva contraseña debe tener al menos 8 caracteres', 'error');
-      if (nw !== cf) return toast('Las contraseñas no coinciden', 'error');
-      fp.reset(); toast('Contraseña actualizada', 'success');
-    });
+    const passForm=$('#form-pass');
+    passForm.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;const actual=f.elements.actual.value,nueva=f.elements.nueva.value,confirmar=f.elements.confirmar.value;if(!actual)return toast('Escribe tu contraseña actual.','error');if(nueva.length<8||!/[A-Za-z]/.test(nueva)||!/[0-9]/.test(nueva))return toast('La nueva contraseña debe tener al menos 8 caracteres e incluir letras y números.','error');if(nueva!==confirmar)return toast('Las contraseñas no coinciden.','error');const b=f.querySelector('button[type="submit"]');b.disabled=true;try{await MudGoAPI.changePassword({actual,nueva,confirmar});f.reset();toast('Contraseña actualizada correctamente.','success');}catch(err){toast(err.message,'error');}finally{b.disabled=false;}});
 
-    // Notificaciones
-    const prefs = store.get('notifCliente', { estado: true, promos: false, correo: true });
-    $$('[data-pref]').forEach(s => {
-      s.checked = !!prefs[s.dataset.pref];
-      s.addEventListener('change', () => {
-        prefs[s.dataset.pref] = s.checked; store.set('notifCliente', prefs);
-        $('#notif-state').textContent = Object.values(prefs).some(Boolean) ? 'Activas' : 'Desactivadas';
-      });
-    });
-    $('#notif-state').textContent = Object.values(prefs).some(Boolean) ? 'Activas' : 'Desactivadas';
-
-    $('#add-card').addEventListener('click', () => toast('En esta versión los métodos de pago se agregan al momento de pagar.', 'info'));
+    const prefInputs=$$('[data-pref]');
+    try{const prefs=await MudGoAPI.preferences();const map={estado:'estado_solicitudes',correo:'resumen_correo',promos:'promociones'};prefInputs.forEach(input=>input.checked=!!Number(prefs[map[input.dataset.pref]]));}catch(err){toast('No se pudieron cargar las preferencias. '+err.message,'error');}
+    function paintNotif(){ $('#notif-state').textContent=prefInputs.some(x=>x.checked)?'Preferencias activas':'Desactivadas'; }
+    paintNotif();
+    prefInputs.forEach(input=>input.addEventListener('change',async()=>{const data={};prefInputs.forEach(x=>data[x.dataset.pref]=x.checked);prefInputs.forEach(x=>x.disabled=true);try{await MudGoAPI.updatePreferences(data);paintNotif();toast('Preferencias guardadas.','success');}catch(err){input.checked=!input.checked;toast(err.message,'error');}finally{prefInputs.forEach(x=>x.disabled=false);}}));
+    $('#add-card').addEventListener('click',()=>toast('Los métodos de pago se simulan durante el proceso de pago. MudGo no almacena tarjetas.','info'));
   });
 })();

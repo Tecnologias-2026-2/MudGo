@@ -21,7 +21,7 @@
 
         <div id="track-root">
           <header class="page-head">
-            <div><h1>Seguimiento en vivo</h1><p class="page-head__sub" id="tr-id">#MG-20260810-0042</p></div>
+            <div><h1>Seguimiento en vivo</h1><p class="page-head__sub" id="tr-id">—</p></div>
             <span class="badge badge--blue badge--dot">En curso</span>
           </header>
 
@@ -36,35 +36,29 @@
             <div class="map__truck" id="truck" style="left:30%;top:40%"><i><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l4 4v4h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></i><b id="truck-eta">~15 min</b></div>
           </section>
           <div class="progress mt-8" aria-hidden="true"><div class="progress__bar" id="tr-progress"></div></div>
-          <p class="xs subtle mt-8">Mapa simulado: la posición se actualiza cada segundo.</p>
+          <p class="xs subtle mt-8">Representación ilustrativa de la ruta. La ubicación GPS no está integrada.</p>
 
           <div id="tr-flow" class="mt-16"></div>
 
           <section class="card row row--between">
             <div class="row">
-              <span class="avatar avatar--lg">CR</span>
+              <span class="avatar avatar--lg" id="tr-provider-avatar">PR</span>
               <div>
-                <div class="strong" style="font-size:16px">Carlos Ruiz Hernández</div>
-                <div class="small muted">Camión Chevrolet NHR · ABC-123</div>
-                <div class="xs subtle"><span class="orange">★</span> 4.9 · 234 viajes</div>
+                <div class="strong" style="font-size:16px" id="tr-provider-name">Proveedor asignado</div>
+                <div class="small muted" id="tr-provider-vehicle">Vehículo asignado</div>
+                <div class="xs subtle" id="tr-provider-rating"></div>
               </div>
             </div>
             <a class="icon-btn" id="tr-call" href="tel:+573204859012" aria-label="Llamar al conductor" style="color:var(--blue);background:var(--blue-50);border-color:var(--blue-50)"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
           </section>
 
-          <button class="btn btn--orange btn--lg btn--block mt-16" id="deliver-btn" data-open="deliver-modal">Confirmar entrega <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          <button class="btn btn--outline btn--lg btn--block mt-16" id="deliver-btn" disabled>La finalización la registra el proveedor <svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
         </div>
       </div>
     </main>
   </div>
 
-  <div class="modal" id="deliver-modal" role="dialog" aria-modal="true" aria-labelledby="deliver-title" aria-hidden="true">
-    <div class="modal__box">
-      <div class="modal__head"><h3 id="deliver-title">¿Confirmar la entrega?</h3><button class="modal__close" data-close aria-label="Cerrar"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
-      <div class="modal__body"><p class="muted">Confirma solo si todas tus pertenencias llegaron al destino en buen estado. Al confirmar, se libera el pago al proveedor.</p></div>
-      <div class="modal__foot"><button class="btn btn--outline" data-close>Aún no</button><button class="btn btn--primary" id="deliver-confirm">Sí, todo llegó bien</button></div>
-    </div>
-  </div>
+  <script src="js/api.js"></script>
   <script src="js/app.js"></script>
   <script src="js/cliente.js"></script>
 </body>

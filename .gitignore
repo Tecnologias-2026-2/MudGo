@@ -3,6 +3,7 @@
 *.log
 /backend/config/config.php
 /backend/config/config.local.php
+/probar-conexion.php
 
 # Git metadata accidentally extracted into project root
 /HEAD
@@ -19,4 +20,3 @@
 Thumbs.db
 .vscode/
 .idea/
-/probar-conexion.php

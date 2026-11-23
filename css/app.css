@@ -338,8 +338,8 @@ svg { flex-shrink: 0; }
 /* Interruptor */
 .switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; }
 .switch input { position: absolute; opacity: 0; }
-.switch__track { width: 40px; height: 22px; border-radius: 999px; background: var(--gray-300); position: relative; transition: background .2s; }
-.switch__track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s var(--ease); box-shadow: var(--shadow-sm); }
+.switch__track { width: 40px; height: 22px; border-radius: 999px; background: var(--gray-300); position: relative; transition: background .24s ease; will-change: background; }
+.switch__track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .24s cubic-bezier(.2,.8,.2,1); box-shadow: var(--shadow-sm); will-change: transform; }
 .switch input:checked + .switch__track { background: var(--blue); }
 .switch input:checked + .switch__track::after { transform: translateX(18px); }
 .switch input:focus-visible + .switch__track { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -785,3 +785,7 @@ button.list-row { width: 100%; text-align: left; }
   .option-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .mini-stats { gap: 6px; }
 }
+
+/* Estado de guardado del interruptor: conserva la animación mientras persiste en API. */
+.switch.is-saving { cursor: progress; }
+.switch input:disabled + .switch__track { opacity: .9; }

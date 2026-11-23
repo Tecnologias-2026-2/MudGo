@@ -1,8 +1,7 @@
 /* ==========================================================================
    MudGo · Núcleo compartido de la aplicación
    - Iconos SVG, layout (sidebar / barra móvil), utilidades de UI
-   - Datos de ejemplo y estado de la solicitud (simulado en localStorage)
-   Nota: no hay backend; todo lo que vendría de la base de datos está simulado.
+   - Datos dinámicos desde la API y borradores temporales del flujo de solicitud.
    ========================================================================== */
 (function () {
   'use strict';
@@ -158,60 +157,12 @@
   };
 
   /* ------------------------------------------------------------------ */
-  /* Datos de ejemplo (equivalen a lo que vendría de la base de datos)   */
+  /* Datos: no se mantienen registros ficticios en el cliente.            */
+  /* Toda información de usuarios, solicitudes y servicios procede de API. */
   /* ------------------------------------------------------------------ */
   const DATA = {
-    cliente: { nombre: 'Ana García', correo: 'ana.garcia@correo.com', telefono: '+57 300 485 9011', ciudad: 'Bogotá', desde: '2024-03-10' },
-    proveedor: {
-      id: 'P-001', nombre: 'Carlos Ruiz Hernández', corto: 'Carlos Ruiz', correo: 'carlos.ruiz@correo.com', telefono: '+57 320 485 9012',
-      rating: 4.9, resenas: 234, viajes: 234, vehiculo: 'Camión Chevrolet NHR', placa: 'ABC-123', capacidad: '3 toneladas', llegada: '25 min'
-    },
-    proveedores: [
-      { id: 'P-001', nombre: 'Carlos Ruiz Hernández', correo: 'carlos.ruiz@correo.com', telefono: '+57 320 485 9012', rating: 4.9, resenas: 234, vehiculos: 2, disponible: true, estado: 'Activo', desde: '2024-01-05' },
-      { id: 'P-002', nombre: 'Jhon Morales', correo: 'jhon.m@correo.com', telefono: '+57 315 200 3456', rating: 4.7, resenas: 118, vehiculos: 1, disponible: true, estado: 'Activo', desde: '2024-03-10' },
-      { id: 'P-003', nombre: 'Andrés Castillo', correo: 'andres.c@correo.com', telefono: '+57 301 400 7890', rating: 4.5, resenas: 87, vehiculos: 1, disponible: false, estado: 'Activo', desde: '2024-06-22' },
-      { id: 'P-004', nombre: 'Ricardo Méndez', correo: 'ricardo@correo.com', telefono: '+57 318 500 1122', rating: 3.2, resenas: 24, vehiculos: 1, disponible: false, estado: 'Suspendido', desde: '2023-11-14' }
-    ],
-    usuarios: [
-      { nombre: 'Ana García', correo: 'ana@correo.com', telefono: '+57 300 485 9011', servicios: 4, estado: 'Activo', desde: '2024-03-10' },
-      { nombre: 'Pedro Sánchez', correo: 'pedro@correo.com', telefono: '+57 312 000 1234', servicios: 2, estado: 'Activo', desde: '2024-02-14' },
-      { nombre: 'Laura Torres', correo: 'laura@correo.com', telefono: '+57 315 000 5678', servicios: 1, estado: 'Activo', desde: '2025-01-22' },
-      { nombre: 'Marcos Díaz', correo: 'marcos@correo.com', telefono: '+57 320 000 9012', servicios: 3, estado: 'Inactivo', desde: '2024-07-05' },
-      { nombre: 'Sofía Ramírez', correo: 'sofia@correo.com', telefono: '+57 301 111 2222', servicios: 0, estado: 'Activo', desde: '2025-08-08' },
-      { nombre: 'Jorge López', correo: 'jorge@correo.com', telefono: '+57 302 333 4444', servicios: 6, estado: 'Suspendido', desde: '2023-12-03' }
-    ],
-    /* Historial del cliente (C18) */
-    historialCliente: [
-      { id: 'MG-042', origen: 'Calle 72 #10-45, Bogotá', destino: 'Av. El Dorado #68C-61', fecha: '2026-08-10', proveedor: 'Carlos Ruiz', estado: 'Finalizado', costo: 198450, rating: 5, vehiculo: 'Camión Chevrolet NHR · ABC-123', inicio: '08:00 AM', fin: '10:45 AM' },
-      { id: 'MG-041', origen: 'Cra 15 #93-75, Bogotá', destino: 'Cll 100 #19-55, Bogotá', fecha: '2026-06-28', proveedor: 'Jhon Morales', estado: 'Finalizado', costo: 120000, rating: 4, vehiculo: 'Van Ford Transit · XYZ-789', inicio: '09:00 AM', fin: '11:30 AM' },
-      { id: 'MG-038', origen: 'Calle 45 #27-30, Medellín', destino: 'Cra 80 #44B-30', fecha: '2026-06-10', proveedor: null, estado: 'Cancelado', costo: 0, rating: null, motivo: 'Cancelado por el cliente' },
-      { id: 'MG-030', origen: 'Cll 26 #69-70, Bogotá', destino: 'Cra 50 #12-20, Engativá', fecha: '2026-03-02', proveedor: 'Andrés Castillo', estado: 'Finalizado', costo: 145000, rating: 5, vehiculo: 'Camión Isuzu NPR · DEF-456', inicio: '07:30 AM', fin: '10:00 AM' }
-    ],
-    /* Solicitudes que recibe el proveedor (P02) */
-    solicitudesProveedor: [
-      { id: 'MG-043', cliente: 'Pedro Sánchez', telefono: '+57 312 000 1234', valor: 175000, fecha: '2026-08-10', hora: '09:00', origen: 'Cra 30 #45-20, Bogotá', destino: 'Cll 80 #70-15, Bogotá', carga: 'Mediano', vehiculo: 'Camión mediano', ayudantes: 2, estado: 'Pendiente', clienteRating: 4.8, clienteMudanzas: 6 },
-      { id: 'MG-044', cliente: 'Laura Torres', telefono: '+57 315 000 5678', valor: 95000, fecha: '2026-08-10', hora: '14:00', origen: 'Cll 100 #14-50, Bogotá', destino: 'Cra 68 #22-10, Bogotá', carga: 'Pequeño', vehiculo: 'Van', ayudantes: 1, estado: 'Pendiente', clienteRating: 4.6, clienteMudanzas: 1 },
-      { id: 'MG-040', cliente: 'Marcos Díaz', telefono: '+57 320 000 9012', valor: 260000, fecha: '2026-08-09', hora: '07:00', origen: 'Av. NQS #30-80, Bogotá', destino: 'Cll 127 #11-30, Bogotá', carga: 'Grande', vehiculo: 'Camión mediano', ayudantes: 3, estado: 'Aceptada', clienteRating: 4.9, clienteMudanzas: 3 },
-      { id: 'MG-038', cliente: 'Gabriela Mora', telefono: '+57 318 000 3344', valor: 82000, fecha: '2026-08-08', hora: '10:00', origen: 'Cll 45 #27-30, Medellín', destino: 'Cra 80 #44B-30, Medellín', carga: 'Pequeño', vehiculo: 'Van', ayudantes: 1, estado: 'Rechazada', clienteRating: 4.2, clienteMudanzas: 2 }
-    ],
-    historialProveedor: [
-      { id: 'MG-040', cliente: 'Marcos Díaz', origen: 'Av. NQS #30-80', destino: 'Cll 127 #11-30', fecha: '2026-08-09', estado: 'Finalizado', ganancia: 234000 },
-      { id: 'MG-035', cliente: 'Ana García', origen: 'Cll 72 #10-45', destino: 'El Dorado #68C', fecha: '2026-08-07', estado: 'Finalizado', ganancia: 178000 },
-      { id: 'MG-031', cliente: 'Pedro Sánchez', origen: 'Cra 15 #93-75', destino: 'Cll 100 #19-55', fecha: '2026-08-04', estado: 'Finalizado', ganancia: 108000 },
-      { id: 'MG-028', cliente: 'Gabriela Mora', origen: 'Cll 45 #27-30', destino: 'Cra 68 #22-10', fecha: '2026-08-03', estado: 'Cancelado', ganancia: 0 }
-    ],
-    vehiculos: [
-      { id: 'V-1', modelo: 'Camión Chevrolet NHR', placa: 'ABC-123', tipo: 'Camión mediano', capacidad: '3 toneladas', disponible: true },
-      { id: 'V-2', modelo: 'Toyota Dyna', placa: 'XYZ-456', tipo: 'Camión mediano', capacidad: '2.5 toneladas', disponible: false }
-    ],
-    serviciosAdmin: [
-      { id: 'MG-042', cliente: 'Ana García', proveedor: 'Carlos Ruiz', origen: 'Cll 72 #10-45', destino: 'El Dorado #68C', fecha: '2026-08-10', estado: 'En curso', costo: 198450 },
-      { id: 'MG-041', cliente: 'Pedro Sánchez', proveedor: 'Jhon Morales', origen: 'Cra 15 #93-75', destino: 'Cll 100 #19-55', fecha: '2026-08-09', estado: 'Finalizado', costo: 120000 },
-      { id: 'MG-040', cliente: 'Marcos Díaz', proveedor: 'Carlos Ruiz', origen: 'Av. NQS #30-80', destino: 'Cll 127 #11-30', fecha: '2026-08-09', estado: 'Finalizado', costo: 260000 },
-      { id: 'MG-039', cliente: 'Laura Torres', proveedor: 'Andrés Castillo', origen: 'Cll 100 #14-50', destino: 'Cra 68 #22-10', fecha: '2026-08-08', estado: 'Pendiente', costo: 95000 },
-      { id: 'MG-038', cliente: 'Sofía Ramírez', proveedor: null, origen: 'Cll 45 #27-30', destino: 'Cra 80 #44B-30', fecha: '2026-08-07', estado: 'Cancelado', costo: 0 },
-      { id: 'MG-037', cliente: 'Jorge López', proveedor: 'Jhon Morales', origen: 'Cra 7 #72-12', destino: 'Cll 26 #69-70', fecha: '2026-08-06', estado: 'Finalizado', costo: 175000 }
-    ]
+    cliente: {}, proveedor: {}, proveedores: [], usuarios: [], historialCliente: [],
+    solicitudesProveedor: [], historialProveedor: [], vehiculos: [], serviciosAdmin: []
   };
 
   const ESTADO_BADGE = {
@@ -240,16 +191,8 @@
     vehiculo: { van: 'Van', 'camion-pequeno': 'Camión pequeño', 'camion-mediano': 'Camión mediano', 'camion-grande': 'Camión grande' }
   };
 
-  /** Distancia simulada: en producción vendría de un servicio de mapas. */
-  function estimateDistance(origen, destino) {
-    const a = (origen || '').trim().toLowerCase();
-    const b = (destino || '').trim().toLowerCase();
-    if (a.startsWith('calle 72 #10-45') && b.startsWith('av. el dorado #68c-61')) return 12.4;
-    let h = 0;
-    const s = a + '|' + b;
-    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-    return Math.round((3 + (h % 220) / 10) * 10) / 10; // 3.0 – 24.9 km
-  }
+  /** Distancia no disponible: no se inventa sin un servicio cartográfico. */
+  function estimateDistance() { return 1; /* Base demostrativa; no representa distancia cartográfica. */ }
 
   function calcQuote(r) {
     const round = n => Math.round(n / 1000) * 1000;
@@ -262,36 +205,22 @@
     return { distancia, volumen, vehiculo, personal, subtotal, tarifa, total: subtotal + tarifa };
   }
 
-  function demoRequest() {
-    const r = {
-      id: 'MG-043',
-      origen: 'Calle 72 #10-45, Bogotá',
-      destino: 'Av. El Dorado #68C-61, Bogotá',
-      fecha: '2026-08-10',
-      hora: '08:00',
-      volumen: 'mediano',
-      vehiculo: 'camion-mediano',
-      ayudantes: 2,
-      descripcion: '',
-      distancia: 12.4,
-      estado: 'borrador',
-      creada: Date.now()
-    };
-    r.precio = calcQuote(r);
-    return r;
-  }
+  function demoRequest() { return null; }
 
   const request = {
     get() { return store.get('solicitud', null); },
-    /** Solicitud guardada o la de ejemplo del prototipo (para que cada pantalla se pueda abrir sola). */
-    current() { return request.get() || demoRequest(); },
+    current() { return request.get(); },
     save(r) { r.actualizada = Date.now(); return store.set('solicitud', r); },
-    update(patch) { return request.save(Object.assign(request.current(), patch)); },
+    update(patch) {
+      const current = request.get();
+      if (!current) throw new Error('No hay una solicitud local seleccionada.');
+      return request.save(Object.assign(current, patch));
+    },
     clear() { store.remove('solicitud'); },
     shortRoute(r) { return shortAddr(r.origen) + ' → ' + shortAddr(r.destino); },
     serviceNumber(r) {
       const d = (r.fecha || '').replace(/-/g, '');
-      return 'MG-' + (d || '20260810') + '-' + String(r.id || 'MG-042').replace(/\D/g, '').padStart(4, '0');
+      return 'MG-' + (d || 'SIN-FECHA') + '-' + String(r.id || '').replace(/\D/g, '').padStart(4, '0');
     }
   };
   function shortAddr(a) {
@@ -403,7 +332,7 @@
   /* ------------------------------------------------------------------ */
   const NAV = {
     cliente: {
-      user: { name: 'Ana García', role: 'Cliente' },
+      user: { name: 'Cliente', role: 'Cliente' },
       items: [
         { key: 'inicio', label: 'Inicio', href: 'dashboard-cliente.html', icon: 'home' },
         { key: 'solicitar', label: 'Solicitar', href: 'solicitar-mudanza.html', icon: 'plusCircle' },
@@ -413,7 +342,7 @@
       ]
     },
     proveedor: {
-      user: { name: 'Carlos Ruiz', role: 'Proveedor' },
+      user: { name: 'Proveedor', role: 'Proveedor' },
       items: [
         { key: 'inicio', label: 'Inicio', href: 'dashboard-proveedor.html', icon: 'home' },
         { key: 'solicitudes', label: 'Solicitudes', href: 'solicitudes-proveedor.html', icon: 'list', badge: () => pendingForProvider() },
@@ -433,21 +362,8 @@
     }
   };
 
-  /** Solicitudes del proveedor (datos de ejemplo + la solicitud real del cliente si está esperando). */
-  function providerRequests() {
-    const states = store.get('provEstados', {});
-    const list = DATA.solicitudesProveedor.map(s => Object.assign({}, s, states[s.id] ? { estado: states[s.id] } : {}));
-    const r = request.get();
-    if (r && ['esperando', 'buscando'].includes(r.estado)) {
-      list.unshift({
-        id: r.id, cliente: DATA.cliente.nombre, telefono: DATA.cliente.telefono, valor: r.precio.subtotal,
-        fecha: r.fecha, hora: r.hora, origen: r.origen, destino: r.destino, carga: LABELS.volumen[r.volumen],
-        vehiculo: LABELS.vehiculo[r.vehiculo], ayudantes: r.ayudantes, estado: 'Pendiente', live: true,
-        clienteRating: 4.8, clienteMudanzas: 4, nueva: true
-      });
-    }
-    return list;
-  }
+  /** La lista del proveedor se obtiene exclusivamente desde la API. */
+  function providerRequests() { return []; }
   function pendingForProvider() { return providerRequests().filter(s => s.estado === 'Pendiente').length; }
 
   function renderLayout() {
@@ -457,6 +373,8 @@
     const app = $('.app');
     if (!cfg || !app) return;
     const active = body.dataset.nav;
+    const currentUser = window.MG_USER;
+    if (currentUser) { cfg.user.name = currentUser.nombre; cfg.user.role = currentUser.rol === 'admin' ? 'Administrador' : currentUser.rol === 'proveedor' ? 'Proveedor' : 'Cliente'; }
     const main = $('.main', app);
 
     const navLinks = cfg.items.map(it => {
@@ -499,7 +417,7 @@
     ).join('');
     body.appendChild(bottom);
 
-    $$('[data-logout]').forEach(a => a.addEventListener('click', () => store.remove('sesion')));
+    $$('[data-logout]').forEach(a => a.addEventListener('click', async e => { e.preventDefault(); try { await window.MudGoAPI.logout(); } finally { store.remove('sesion'); location.href = 'login.html'; } }));
   }
 
   /* Fecha de hoy en elementos [data-today] */
@@ -522,13 +440,28 @@
   const pages = {};
   function page(name, fn) { pages[name] = fn; }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    renderLayout();
+  document.addEventListener('DOMContentLoaded', async () => {
     fillToday();
     registerSW();
-    const name = document.body.dataset.page;
-    if (name && pages[name]) {
-      try { pages[name](); } catch (err) { console.error('[MudGo] Error en la página', name, err); }
+    const expectedRole = document.body.dataset.role;
+    const pageName = document.body.dataset.page;
+    try {
+      if (!window.MudGoAPI) throw new Error('No se pudo cargar el cliente de la API.');
+      const user = await window.MudGoAPI.me();
+      if (expectedRole && user.rol !== expectedRole) {
+        const destinations = { cliente: 'dashboard-cliente.html', proveedor: 'dashboard-proveedor.html', admin: 'admin-dashboard.html' };
+        if (destinations[user.rol]) { location.replace(destinations[user.rol]); return; }
+        throw new Error('El rol de la cuenta no tiene acceso a esta sección.');
+      }
+      window.MG_USER = user;
+      renderLayout();
+      if (pageName && pages[pageName]) {
+        try { pages[pageName](); } catch (err) { console.error('[MudGo] Error en la página', pageName, err); }
+      }
+    } catch (err) {
+      console.warn('[MudGo] No fue posible validar la sesión:', err.message);
+      if (err.status === 401 || err.status === 403) { location.replace('login.html'); return; }
+      document.body.innerHTML = '<main style="max-width:620px;margin:12vh auto;padding:24px;font-family:system-ui;text-align:center"><h1>MudGo no está disponible</h1><p>No fue posible conectar con el servidor. Verifica que PHP y MySQL estén activos e inténtalo de nuevo.</p><p style="color:#777;font-size:14px">' + esc(err.message) + '</p><button onclick="location.reload()" style="padding:12px 20px;border:0;border-radius:8px;background:#0601cb;color:white;cursor:pointer">Reintentar</button></main>';
     }
   });
 

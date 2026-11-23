@@ -10,21 +10,26 @@ $path='/'.trim($path,'/');
 
 if($path==='/api/health' && $method==='GET'){
     try{Database::connection()->query('SELECT 1');Response::success(['api'=>'online','database'=>'connected','version'=>'1.0.0'],'MudGo API disponible.');}
-    catch(Throwable $e){
-    error_log('ERROR MYSQL MUDGO: ' . $e->getMessage());
-    Response::error('API disponible, pero no fue posible conectar con MySQL.',503);
-}
+    catch(Throwable $e){Response::error('API disponible, pero no fue posible conectar con MySQL.',503);}
 }
 if($path==='/api/auth/register'&&$method==='POST')AuthController::register();
 if($path==='/api/auth/login'&&$method==='POST')AuthController::login();
 if($path==='/api/auth/me'&&$method==='GET')AuthController::me();
 if($path==='/api/auth/logout'&&$method==='POST')AuthController::logout();
+if($path==='/api/auth/change-password'&&$method==='POST')ProfileController::changePassword();
+if($path==='/api/perfil'&&in_array($method,['GET','PATCH'],true))ProfileController::profile();
+if($path==='/api/cliente/direcciones'&&in_array($method,['GET','POST'],true))ProfileController::addresses();
+if(preg_match('#^/api/cliente/direcciones/(\d+)$#',$path,$m)&&$method==='DELETE')ProfileController::deleteAddress((int)$m[1]);
+if($path==='/api/preferencias'&&in_array($method,['GET','PATCH'],true))ProfileController::preferences();
+if($path==='/api/proveedor/documentos'&&in_array($method,['GET','POST'],true))ProfileController::documents();
 if($path==='/api/solicitudes'&&$method==='GET')RequestController::index();
 if($path==='/api/solicitudes'&&$method==='POST')RequestController::create();
 if(preg_match('#^/api/solicitudes/(\d+)$#',$path,$m)&&$method==='GET')RequestController::show((int)$m[1]);
 if(preg_match('#^/api/solicitudes/(\d+)/confirmar$#',$path,$m)&&$method==='POST')RequestController::confirm((int)$m[1]);
 if(preg_match('#^/api/solicitudes/(\d+)/(aceptar|rechazar)$#',$path,$m)&&$method==='POST')RequestController::decision((int)$m[1],$m[2]);
 if(preg_match('#^/api/solicitudes/(\d+)/estado$#',$path,$m)&&$method==='PATCH')RequestController::updateStatus((int)$m[1]);
+if($path==='/api/proveedor/perfil'&&in_array($method,['GET','PATCH'],true))ProviderController::profile();
+if($path==='/api/proveedor/disponibilidad'&&$method==='PATCH')ProviderController::availability();
 if($path==='/api/vehiculos'&&$method==='GET')VehicleController::index();
 if($path==='/api/vehiculos'&&$method==='POST')VehicleController::create();
 if(preg_match('#^/api/vehiculos/(\d+)$#',$path,$m)&&$method==='PATCH')VehicleController::update((int)$m[1]);

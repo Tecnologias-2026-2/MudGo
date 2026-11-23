@@ -4,8 +4,7 @@ declare(strict_types=1);
 $config=require __DIR__.'/config/config.php';
 $origin=$config['app']['allowed_origin'];
 $requestOrigin=$_SERVER['HTTP_ORIGIN'] ?? '';
-if ($origin === '*' && $requestOrigin !== '') { header('Access-Control-Allow-Origin: '.$requestOrigin); header('Vary: Origin'); }
-elseif ($origin !== '*') { header('Access-Control-Allow-Origin: '.$origin); }
+if ($origin !== '*' && $requestOrigin === $origin) { header('Access-Control-Allow-Origin: '.$origin); header('Vary: Origin'); }
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, DELETE, OPTIONS');

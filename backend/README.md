@@ -44,7 +44,7 @@ Todas las respuestas son JSON con el formato `{ success, message, data }`.
 Registro:
 ```json
 {
-  "nombre": "Ana García",
+  "nombre": "Nombre del usuario registrado",
   "correo": "ana@example.com",
   "telefono": "3001234567",
   "password": "ClaveSegura123",
@@ -85,3 +85,11 @@ Desde una terminal ubicada en la carpeta del proyecto ejecuta:
 php backend/scripts/create-admin.php "Administrador MudGo" admin@mudgo.local "UnaClaveSeguraDe12Caracteres"
 ```
 No se incluye una contraseña predeterminada en el SQL.
+
+## Migración de perfiles (noviembre de 2026)
+
+Después de actualizar el proyecto, ejecuta una sola vez `database/migracion_perfiles.sql` sobre la base `mudgo`. La migración es aditiva: crea las tablas de direcciones de cliente, preferencias de usuario y documentos de proveedor, sin borrar usuarios, solicitudes, vehículos ni pagos existentes.
+
+Los documentos cargados se guardan en un directorio privado del sistema (`sys_get_temp_dir()/mudgo-private-storage/proveedor-docs`), fuera de la raíz pública del sitio. El proveedor puede consultar el estado de recepción; no existe todavía un módulo administrativo de revisión documental.
+
+El pago sigue siendo una simulación académica. No introduzcas tarjetas, cuentas bancarias ni credenciales reales.
