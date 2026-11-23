@@ -4,8 +4,8 @@ Plataforma web para la gestión de servicios de mudanza.
 MudGo conecta a personas que necesitan realizar una mudanza con proveedores de transporte. La plataforma contempla perfiles diferenciados para clientes, proveedores y administradores, y permite gestionar solicitudes, estados del servicio y la información asociada.
 Integrantes
 Completar por el grupo:
-- Alejandra Chambueta – Código
-- Mauricio Berrio – Código
+- Alejandra Chambueta – 1203054
+- Mauricio Berrio – 1202894
 - Sebastian Quevedo – 1202830
 
 ### 🎯 1. Objetivo General
